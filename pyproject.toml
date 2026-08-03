@@ -1,5 +1,5 @@
 [project]
-name = "homekit-camera-gst"
+name = "homekit-camera-gstreamer"
 version = "1.0"
 requires-python = ">=3.10"
 dependencies = ["HAP-Python"]
