@@ -1,0 +1,1 @@
+gir1.2-gst-plugins-base-1.0 gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-pipewire libgstreamer1.0-0 pipewire pipewire-libcamera libcamera-ipa wireplumber avahi-daemon python3-gi python3-pip python3-gst-1.0

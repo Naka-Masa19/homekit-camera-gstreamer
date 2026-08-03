@@ -1,0 +1,5 @@
+accessory.state
+build/
+__pycache__/
+*.egg-info/
+.vscode
