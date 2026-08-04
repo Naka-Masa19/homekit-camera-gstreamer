@@ -61,22 +61,18 @@ driver = AccessoryDriver(port=51826)
 class source(Gst.Bin):
     def __init__(self):
         super().__init__()
-        src = Gst.ElementFactory.make("pipewiresrc")
-        self.add(src)
+        src = self.make_and_add("pipewiresrc")
 
-        capsfilter = Gst.ElementFactory.make("capsfilter")
+        capsfilter = self.make_and_add("capsfilter")
         caps = Gst.Caps.new_empty_simple("image/jpeg")
         caps.set_value("width", 1920)
         caps.set_value("height", 1080)
         caps.set_value("framerate", Gst.Fraction(30))
         capsfilter.set_property("caps", caps)
-        self.add(capsfilter)
 
-        jpegdec = Gst.ElementFactory.make("jpegdec")
-        self.add(jpegdec)
+        jpegdec = self.make_and_add("jpegdec")
 
-        src.link(capsfilter)
-        capsfilter.link(jpegdec)
+        Gst.Element.link_many(src, capsfilter, jpegdec)
 
         ghost_pad = Gst.GhostPad.new("src", jpegdec.get_static_pad("src"))
         ghost_pad.set_active(True)
