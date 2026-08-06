@@ -51,6 +51,7 @@ class StreamingSession:
         self.pre_encoder_format = pre_encoder_format
         self.encoder_properties = encoder_properties
         self.pipeline = Gst.Pipeline.new()
+        self.bus = self.pipeline.get_bus()
 
         self.src = source()
         match self.src.iterate_all_by_element_factory_name("pipewiresrc").next():
@@ -140,6 +141,8 @@ class StreamingSession:
     def reconfigure_stream(self, stream_config):
         self.stream_config.update(stream_config)
         self.src.get_static_pad("src").add_probe(Gst.PadProbeType.BLOCK_DOWNSTREAM, self._reinit_encodebin)
+        while self.bus.pop():
+            pass
         return True
 
     def stop_stream(self):

@@ -35,14 +35,10 @@ options = {
         "resolutions": [
             # Width, Height, framerate
             [320, 240, 15], # Required for Apple Watch
-            [1024, 768, 30],
-            [1920, 1080, 30],
-            [640, 480, 30],
-            [640, 360, 30],
-            [480, 360, 30],
-            [480, 270, 30],
-            [320, 240, 30],
-            [320, 180, 30],
+            [1600, 1200, 30], # UXGA
+            [1024, 768, 30],  # XGA
+            [640, 480, 30],   # VGA
+            [320, 240, 30],   # QVGA
         ],
     },
     "audio": {
@@ -58,28 +54,7 @@ options = {
 # Start the accessory on port 51826
 driver = AccessoryDriver(port=51826)
 
-class source(Gst.Bin):
-    def __init__(self):
-        super().__init__()
-        src = self.make_and_add("pipewiresrc")
-        #src.set_properties(use_bufferpool=False)
-
-        capsfilter = self.make_and_add("capsfilter")
-        caps = Gst.Caps.new_empty_simple("image/jpeg")
-        caps.set_value("width", 1920)
-        caps.set_value("height", 1080)
-        caps.set_value("framerate", Gst.Fraction(30))
-        capsfilter.set_property("caps", caps)
-
-        jpegdec = self.make_and_add("jpegdec")
-
-        Gst.Element.link_many(src, capsfilter, jpegdec)
-
-        ghost_pad = Gst.GhostPad.new("src", jpegdec.get_static_pad("src"))
-        ghost_pad.set_active(True)
-        self.add_pad(ghost_pad)
-
-#source = "pipewiresrc ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
+source = "pipewiresrc ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
 acc = GstCamera(source, options, driver, "Camera")
 driver.add_accessory(acc)
 

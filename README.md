@@ -30,7 +30,9 @@ sudo apt install pipewire wireplumber gstreamer1.0-pipewire
 wpctl status
 wpctl set-default [カメラのID]
 ```
-> [カメラのID]はwpctl statusのSourcesの結果に合わせて書き換えて下さい
+> [カメラのID]はwpctl statusのSourcesの結果に合わせて書き換えて下さい。
 
 ### 実行
-[mjpegカメラ向けサンプルコード](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/blob/main/examples/mpeg-camera.py)
+[16:9カメラ向けサンプルコード (一般的なカメラ、Raspberry Pi Camera Module 3など)](examples/pipewire-16:9.py)
+
+[4:3カメラ向けサンプルコード (Raspberry Pi Camera Module 1,2など)](examples/pipewire-4:3.py)
