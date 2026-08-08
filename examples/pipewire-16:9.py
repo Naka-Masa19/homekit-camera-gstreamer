@@ -12,9 +12,6 @@ import signal
 from pyhap.accessory_driver import AccessoryDriver
 from pyhap import camera, util
 from gst_camera import GstCamera
-from gi import require_version
-require_version("Gst", "1.0")
-from gi.repository import Gst # type:ignore
 
 # Specify the audio and video configuration that your device can support
 # The HAP client will choose from these when negotiating a session.
@@ -34,11 +31,13 @@ options = {
         },
         "resolutions": [
             # Width, Height, framerate
-            [320, 240, 15], # Required for Apple Watch
             [1920, 1080, 30], # FHD
             [1280, 720, 30],  # HD
+            [960, 540, 30],   # qHD
             [640, 360, 30],   # 360p
+            [480, 270, 30],   # 270p
             [320, 180, 30],   # 180p
+            [320, 240, 15],   # Required for Apple Watch
         ],
     },
     "audio": {
