@@ -20,4 +20,4 @@ jobs:
         pip install pylint .
     - name: Analysing the code with pylint
       run: |
-        pylint gst-camera --disable=all --enable=syntax-error
+        pylint gst_camera --disable=all --enable=syntax-error
