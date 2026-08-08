@@ -1,6 +1,8 @@
 # HomeKit Camera GStreamer
 [English](README-en.md)
 
+[![Lint](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml)
+
 ## 特徴
 - マルチストリーミング対応
     - 複数のデバイスへ同時にストリーミングできます。
