@@ -58,7 +58,7 @@ options = {
 # Start the accessory on port 51826
 driver = AccessoryDriver(port=51826)
 
-class source(Gst.Bin):
+class source(Gst.Bin): # noqa: N801
     def __init__(self):
         super().__init__()
         src = self.make_and_add("pipewiresrc")

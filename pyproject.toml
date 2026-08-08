@@ -7,3 +7,14 @@ dependencies = ["HAP-Python"]
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 150
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "N", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"examples/*.py" = ["E402"]
+"src/gst_camera/core.py" = ["E402"]

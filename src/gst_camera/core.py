@@ -1,8 +1,9 @@
 from base64 import b64decode
-from typing import Callable
+from collections.abc import Callable
 from pyhap import camera
 from os import environ
-import logging, asyncio
+import logging
+import asyncio
 from gi import require_versions
 require_versions({"Gst":"1.0", "GstApp":"1.0", "GstPbutils":"1.0"})
 from gi.repository import Gst, GstApp, GstPbutils # type:ignore
@@ -226,7 +227,7 @@ class GstCamera(camera.Camera):
         return session_info["streaming_instance"].reconfigure_stream(stream_config)
 
     async def stop_stream(self, session_info):
-        logger.info(f"[{session_info["id"]}] Stopping stream")
+        logger.info(f"[{session_info['id']}] Stopping stream")
         session_info["streaming_instance"].stop_stream()
 
     def get_snapshot(self, info):
