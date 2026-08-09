@@ -5,8 +5,10 @@ from os import environ
 import logging
 import asyncio
 from gi import require_versions
-require_versions({"Gst":"1.0", "GstApp":"1.0", "GstPbutils":"1.0"})
-from gi.repository import Gst, GstApp, GstPbutils # type:ignore
+
+require_versions({"Gst": "1.0", "GstApp": "1.0", "GstPbutils": "1.0"})
+from gi.repository import Gst, GstApp, GstPbutils  # type:ignore
+
 Gst.init()
 
 logger = logging.getLogger(__name__)
@@ -14,40 +16,48 @@ logger.info(f"Initialized {Gst.version_string()}")
 
 _ENCODE_PROFILE = {
     camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["BASELINE"]: "baseline",
-    camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"]    : "main",
-    camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]    : "high"
+    camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"]: "main",
+    camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]: "high",
 }
 
-_ENCODE_LEVEL ={
+_ENCODE_LEVEL = {
     camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_1"]: "3.1",
     camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_2"]: "3.2",
-    camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE4_0"]: "4"
+    camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE4_0"]: "4",
 }
 
 if "GST_DEBUG" not in environ:
     Gst.debug_set_default_threshold(
         {
             logging.CRITICAL: Gst.DebugLevel.NONE,
-            logging.ERROR   : Gst.DebugLevel.ERROR,
-            logging.WARNING : Gst.DebugLevel.WARNING,
-            logging.INFO    : Gst.DebugLevel.FIXME,
-            logging.DEBUG   : Gst.DebugLevel.INFO
+            logging.ERROR: Gst.DebugLevel.ERROR,
+            logging.WARNING: Gst.DebugLevel.WARNING,
+            logging.INFO: Gst.DebugLevel.FIXME,
+            logging.DEBUG: Gst.DebugLevel.INFO,
         }[logger.getEffectiveLevel()]
-        )
+    )
 
 if not hasattr(asyncio, "SafeChildWatcher"):
+
     class _DummyChildWatcher:
         def __init__(self):
             logger.warning("Class asyncio.SafeChildWatcher was removed in Python 3.14.")
 
         def __getattr__(self, name):
-            return lambda *a,**ka:logger.warning(f"Called asyncio.SafeChildWatcher.{name}, ignored.")
+            return lambda *a, **ka: logger.warning(f"Called asyncio.SafeChildWatcher.{name}, ignored.")
 
     asyncio.SafeChildWatcher = _DummyChildWatcher
-    asyncio.set_child_watcher = lambda watcher: logger.warning("Method asyncio.set_child_watcher was removed in Python 3.14, ignored.")
+    asyncio.set_child_watcher = lambda w: logger.warning("Method asyncio.set_child_watcher was removed in Python 3.14, ignored.")
+
 
 class StreamingSession:
-    def __init__(self, source:Callable[[], Gst.Bin], stream_config:dict, pre_encoder_format:str|None, encoder_properties:Gst.Structure):
+    def __init__(
+        self,
+        source: Callable[[], Gst.Bin],
+        stream_config: dict,
+        pre_encoder_format: str | None,
+        encoder_properties: Gst.Structure,
+    ):
         self.stream_config = stream_config
         self.pre_encoder_format = pre_encoder_format
         self.encoder_properties = encoder_properties
@@ -57,31 +67,31 @@ class StreamingSession:
         self.src = source()
         match self.src.iterate_all_by_element_factory_name("pipewiresrc").next():
             case Gst.IteratorResult.OK, pipewiresrc:
-                pipewiresrc.set_properties(client_name = f"HomeKit Stream ({stream_config['address']})")
+                pipewiresrc.set_properties(client_name=f"HomeKit Stream ({stream_config['address']})")
         self.pipeline.add(self.src)
 
         self._init_encodebin()
 
         self.rtppay = self.pipeline.make_and_add("rtph264pay")
-        self.rtppay.set_properties(config_interval = -1,
-                                   ssrc = stream_config["v_ssrc"],
-                                   mtu = int.from_bytes(stream_config["v_max_mtu"], "little"),
-                                   pt = int.from_bytes(stream_config["v_payload_type"], "little"))
+        self.rtppay.set_properties(
+            config_interval=-1,
+            ssrc=stream_config["v_ssrc"],
+            mtu=int.from_bytes(stream_config["v_max_mtu"], "little"),
+            pt=int.from_bytes(stream_config["v_payload_type"], "little"),
+        )
 
         srtp = self.pipeline.make_and_add("srtpenc")
-        srtp.set_properties(rtp_cipher = "aes-128-icm",
-                            rtp_auth = "hmac-sha1-80",
-                            key = Gst.Buffer.new_wrapped(b64decode(stream_config["v_srtp_key"])))
+        srtp.set_properties(
+            rtp_cipher="aes-128-icm", rtp_auth="hmac-sha1-80", key=Gst.Buffer.new_wrapped(b64decode(stream_config["v_srtp_key"]))
+        )
 
         sink = self.pipeline.make_and_add("udpsink")
-        sink.set_properties(sync = False,
-                            host = stream_config["address"],
-                            port = stream_config["v_port"])
+        sink.set_properties(sync=False, host=stream_config["address"], port=stream_config["v_port"])
 
         Gst.Element.link_many(self.src, self.enc, self.rtppay, srtp, sink)
 
     def _init_encodebin(self):
-        self.enc:Gst.Bin = self.pipeline.make_and_add("encodebin")
+        self.enc: Gst.Bin = self.pipeline.make_and_add("encodebin")
 
         enc_format = Gst.Caps.new_empty_simple("video/x-h264")
         enc_format.set_value("profile", _ENCODE_PROFILE[self.stream_config["v_profile_id"]])
@@ -98,7 +108,7 @@ class StreamingSession:
         self.profile = GstPbutils.EncodingVideoProfile.new(enc_format, None, enc_restriction, 0)
         self.profile.set_element_properties(self.encoder_properties)
 
-        self.enc.set_properties(profile = self.profile)
+        self.enc.set_properties(profile=self.profile)
 
         logger.info(f"Encodebin input caps: {enc_restriction.to_string()}")
         logger.info(f"H264 profile: {enc_format.to_string()}")
@@ -125,7 +135,7 @@ class StreamingSession:
             self.stop_stream()
         return success
 
-    def _reinit_encodebin(self, pad:Gst.Pad, info:Gst.PadProbeInfo):
+    def _reinit_encodebin(self, pad: Gst.Pad, info: Gst.PadProbeInfo):
         self.src.unlink(self.enc)
         self.enc.unlink(self.rtppay)
 
@@ -149,25 +159,27 @@ class StreamingSession:
     def stop_stream(self):
         self.pipeline.set_state(Gst.State.NULL)
 
+
 class GstCamera(camera.Camera):
     StreamingSessionClass = StreamingSession
-    def __init__(self, source:str|Callable[[], Gst.Bin], options, *args, **kwargs):
+
+    def __init__(self, source: str | Callable[[], Gst.Bin], options, *args, **kwargs):
         super().__init__(options, *args, **kwargs)
-        self.set_info_service(firmware_revision = Gst.version_string())
+        self.set_info_service(firmware_revision=Gst.version_string())
         self.snapshot_pipeline_wait_state = Gst.State.NULL if options.get("stream_count", 1) == 1 else Gst.State.READY
-        self.source = (lambda: Gst.parse_bin_from_description(f"{source} ! identity", True)) if isinstance(source, str) else source
+        self.src = (lambda: Gst.parse_bin_from_description(f"{source} ! identity", True)) if isinstance(source, str) else source
         self.ignore_reconfig = False
         self.pre_encoder_format = None
         self.encoder_properties = Gst.Structure.new_empty("encoder_properties")
         self.snapshot_pipeline = Gst.Pipeline.new()
         self.snapshot_bus = self.snapshot_pipeline.get_bus()
 
-        if not (callable(self.source) and isinstance(snapshot_src := self.source(), Gst.Bin)):
+        if not (callable(self.src) and isinstance(snapshot_src := self.src(), Gst.Bin)):
             raise TypeError("source must be str or callable")
         self.snapshot_pipeline.add(snapshot_src)
         match snapshot_src.iterate_all_by_element_factory_name("pipewiresrc").next():
             case Gst.IteratorResult.OK, pipewiresrc:
-                pipewiresrc.set_properties(client_name = "HomeKit Snapshot")
+                pipewiresrc.set_properties(client_name="HomeKit Snapshot")
 
         snapshot_convertscale = self.snapshot_pipeline.make_and_add("videoconvertscale")
         self.snapshot_caps = self.snapshot_pipeline.make_and_add("capsfilter")
@@ -187,8 +199,8 @@ class GstCamera(camera.Camera):
         return self._pre_encoder_format
 
     @pre_encoder_format.setter
-    def pre_encoder_format(self, arg:str|None):
-        if not isinstance(arg, str|None):
+    def pre_encoder_format(self, arg: str | None):
+        if not isinstance(arg, str | None):
             raise TypeError("pre_encoder_format must be str or None")
         self._pre_encoder_format = arg
 
@@ -197,7 +209,7 @@ class GstCamera(camera.Camera):
         return self._encoder_properties
 
     @encoder_properties.setter
-    def encoder_properties(self, arg:dict|Gst.Structure|None):
+    def encoder_properties(self, arg: dict | Gst.Structure | None):
         match arg:
             case dict():
                 self._encoder_properties.remove_all_fields()
@@ -210,13 +222,15 @@ class GstCamera(camera.Camera):
             case _:
                 raise TypeError("encoder_properties must be dict, Gst.Structure or None")
 
-    async def stop(self): # stop accessary
+    async def stop(self):  # stop accessary
         self.snapshot_pipeline.set_state(Gst.State.NULL)
         return await super().stop()
 
     async def start_stream(self, session_info, stream_config):
         logger.info(f"[{session_info['id']}] Starting stream")
-        session_info["streaming_instance"] = self.StreamingSessionClass(self.source, stream_config, self.pre_encoder_format, self.encoder_properties)
+        session_info["streaming_instance"] = self.StreamingSessionClass(
+            self.src, stream_config, self.pre_encoder_format, self.encoder_properties
+        )
         return await asyncio.to_thread(session_info["streaming_instance"].start_stream)
 
     async def reconfigure_stream(self, session_info, stream_config):
@@ -236,7 +250,7 @@ class GstCamera(camera.Camera):
         caps = Gst.Caps.new_empty_simple("video/x-raw")
         caps.set_value("width", info["image-width"])
         caps.set_value("height", info["image-height"])
-        self.snapshot_caps.set_properties(caps = caps)
+        self.snapshot_caps.set_properties(caps=caps)
         self.snapshot_pipeline.set_state(Gst.State.PLAYING)
         sample = self.snapshot_sink.try_pull_sample(Gst.SECOND * 5)
         self.snapshot_pipeline.set_state(self.snapshot_pipeline_wait_state)

@@ -5,16 +5,19 @@ This is:
 2. Add it to an AccessoryDriver, which will advertise it on the local network,
     setup a server to answer client queries, etc.
 """
+
 import logging
-logging.basicConfig(level=logging.INFO)#, format="[%(module)s] %(message)s")
+
+logging.basicConfig(level=logging.INFO)  # , format="[%(module)s] %(message)s")
 
 import signal
 from pyhap.accessory_driver import AccessoryDriver
 from pyhap import camera, util
 from gst_camera import GstCamera
 from gi import require_version
+
 require_version("Gst", "1.0")
-from gi.repository import Gst # type:ignore
+from gi.repository import Gst  # type:ignore
 
 # Specify the audio and video configuration that your device can support
 # The HAP client will choose from these when negotiating a session.
@@ -23,18 +26,18 @@ options = {
         "codec": {
             "profiles": [
                 camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["BASELINE"],
-                camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"]
-                #camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]
+                camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"],
+                # camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]
             ],
             "levels": [
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE3_1'],
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE3_2'],
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE4_0'],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_1"],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_2"],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE4_0"],
             ],
         },
         "resolutions": [
             # Width, Height, framerate
-            [320, 240, 15], # Required for Apple Watch
+            [320, 240, 15],  # Required for Apple Watch
             [1024, 768, 30],
             [1920, 1080, 30],
             [640, 480, 30],
@@ -50,7 +53,6 @@ options = {
     },
     "srtp": True,
     "stream_count": 5,
-
     # hard code the address if auto-detection does not work as desired: e.g. "192.168.1.226"
     "address": util.get_local_address(),
 }
@@ -58,11 +60,12 @@ options = {
 # Start the accessory on port 51826
 driver = AccessoryDriver(port=51826)
 
-class source(Gst.Bin): # noqa: N801
+
+class source(Gst.Bin):  # noqa: N801
     def __init__(self):
         super().__init__()
         src = self.make_and_add("pipewiresrc")
-        #src.set_properties(use_bufferpool=False)
+        # src.set_properties(use_bufferpool=False)
 
         capsfilter = self.make_and_add("capsfilter")
         caps = Gst.Caps.new_empty_simple("image/jpeg")
@@ -79,7 +82,8 @@ class source(Gst.Bin): # noqa: N801
         ghost_pad.set_active(True)
         self.add_pad(ghost_pad)
 
-#source = "pipewiresrc ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
+
+# source = "pipewiresrc ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
 acc = GstCamera(source, options, driver, "Camera")
 driver.add_accessory(acc)
 

@@ -5,8 +5,10 @@ This is:
 2. Add it to an AccessoryDriver, which will advertise it on the local network,
     setup a server to answer client queries, etc.
 """
+
 import logging
-logging.basicConfig(level=logging.INFO)#, format="[%(module)s] %(message)s")
+
+logging.basicConfig(level=logging.INFO)  # , format="[%(module)s] %(message)s")
 
 import signal
 from pyhap.accessory_driver import AccessoryDriver
@@ -20,24 +22,24 @@ options = {
         "codec": {
             "profiles": [
                 camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["BASELINE"],
-                camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"]
-                #camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]
+                camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"],
+                # camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]
             ],
             "levels": [
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE3_1'],
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE3_2'],
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE4_0'],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_1"],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_2"],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE4_0"],
             ],
         },
         "resolutions": [
             # Width, Height, framerate
-            [1920, 1080, 30], # FHD
+            [1920, 1080, 30],  # FHD
             [1280, 720, 30],  # HD
-            [960, 540, 30],   # qHD
-            [640, 360, 30],   # 360p
-            [480, 270, 30],   # 270p
-            [320, 180, 30],   # 180p
-            [320, 240, 15],   # Required for Apple Watch
+            [960, 540, 30],  # qHD
+            [640, 360, 30],  # 360p
+            [480, 270, 30],  # 270p
+            [320, 180, 30],  # 180p
+            [320, 240, 15],  # Required for Apple Watch
         ],
     },
     "audio": {
@@ -45,7 +47,6 @@ options = {
     },
     "srtp": True,
     "stream_count": 5,
-
     # hard code the address if auto-detection does not work as desired: e.g. "192.168.1.226"
     "address": util.get_local_address(),
 }

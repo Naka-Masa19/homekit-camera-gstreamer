@@ -7,4 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/ruff-action@v4.1.0
+
+      - name: Ruff check
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          args: "check ."
+
+      - name: Ruff format check
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          args: "format --check ."

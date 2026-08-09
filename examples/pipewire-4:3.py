@@ -5,8 +5,10 @@ This is:
 2. Add it to an AccessoryDriver, which will advertise it on the local network,
     setup a server to answer client queries, etc.
 """
+
 import logging
-logging.basicConfig(level=logging.INFO)#, format="[%(module)s] %(message)s")
+
+logging.basicConfig(level=logging.INFO)  # , format="[%(module)s] %(message)s")
 
 import signal
 from pyhap.accessory_driver import AccessoryDriver
@@ -20,24 +22,24 @@ options = {
         "codec": {
             "profiles": [
                 camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["BASELINE"],
-                camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"]
-                #camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]
+                camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["MAIN"],
+                # camera.VIDEO_CODEC_PARAM_PROFILE_ID_TYPES["HIGH"]
             ],
             "levels": [
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE3_1'],
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE3_2'],
-                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES['TYPE4_0'],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_1"],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE3_2"],
+                camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE4_0"],
             ],
         },
         "resolutions": [
             # Width, Height, framerate
-            [1600, 1200, 30], # UXGA
+            [1600, 1200, 30],  # UXGA
             [1280, 960, 30],
             [1024, 768, 30],  # XGA
-            [800, 600, 30],   # SVGA
-            [640, 480, 30],   # VGA
-            [320, 240, 30],   # QVGA
-            [320, 240, 15],   # Required for Apple Watch
+            [800, 600, 30],  # SVGA
+            [640, 480, 30],  # VGA
+            [320, 240, 30],  # QVGA
+            [320, 240, 15],  # Required for Apple Watch
         ],
     },
     "audio": {
@@ -45,7 +47,6 @@ options = {
     },
     "srtp": True,
     "stream_count": 5,
-
     # hard code the address if auto-detection does not work as desired: e.g. "192.168.1.226"
     "address": util.get_local_address(),
 }
