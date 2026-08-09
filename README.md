@@ -25,7 +25,7 @@
 - Raspberry Pi
     - Model: Raspberry Pi 3 Model B Plus
     - OS: Ubuntu Server 26.04 LTS
-    - Kernel: 7.0.0-1015-raspi
+    - Kernel: 7.0.0-1016-raspi
     - Source: PipeWire
     - Camera: Raspberry Pi Camera Module 2 (IMX219)
     - Python: 3.14.4
@@ -73,3 +73,33 @@ wpctl set-default [カメラのID]
 
 [4:3カメラ向けサンプルコード](examples/pipewire-4:3.py)
 - Raspberry Pi Camera Module 1 / 2など
+
+### サービスとして登録 (Linux)
+以下の内容のファイルを`~/.config/systemd/user/homekit-camera.service`に配置してください。
+``` ini
+[Unit]
+Description=HomeKit camera daemon
+Wants=pipewire.service
+After=pipewire.service network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/USER/HomeKit/__main__.py
+Restart=on-failure
+#WorkingDirectory=/home/USER/HomeKit
+
+[Install]
+WantedBy=default.target
+```
+> ExecStart のパスは、プログラムを配置した場所に合わせて変更してください。
+
+サービスのテスト
+``` bash
+systemctl --user start homekit-camera.service
+systemctl --user status homekit-camera.service
+journalctl --user -f -u homekit-camera.service
+```
+サービスの有効化
+``` bash
+loginctl enable-linger $USER
+systemctl --user enable --now homekit-camera.service
+```

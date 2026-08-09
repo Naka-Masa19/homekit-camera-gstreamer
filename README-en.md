@@ -1,6 +1,8 @@
 # HomeKit Camera GStreamer
 [日本語](README.md)
 
+[![Lint](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml)
+
 ## Features
 - Supports multiple simultaneous streams
   - Streams can be served to multiple devices at the same time.
@@ -23,7 +25,7 @@
 - Raspberry Pi
   - Model: Raspberry Pi 3 Model B Plus
   - OS: Ubuntu Server 26.04 LTS
-  - Kernel: 7.0.0-1015-raspi
+  - Kernel: 7.0.0-1016-raspi
   - Source: PipeWire
   - Camera: Raspberry Pi Camera Module 2 (IMX219)
   - Python: 3.14.4
@@ -80,3 +82,38 @@ Choose the sample that matches the aspect ratio of the camera you want to use.
 [Sample code for 4:3 cameras](examples/pipewire-4:3.py)
 
 - Raspberry Pi Camera Module 1 / 2, among others
+
+### Register as a Service (Linux)
+Place a file with the following contents at `~/.config/systemd/user/homekit-camera.service`:
+
+```ini
+[Unit]
+Description=HomeKit camera daemon
+Wants=pipewire.service
+After=pipewire.service network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/USER/HomeKit/__main__.py
+Restart=on-failure
+#WorkingDirectory=/home/USER/HomeKit
+
+[Install]
+WantedBy=default.target
+```
+
+> Update the path in `ExecStart` to match where you installed the program.
+
+Test the service:
+
+```bash
+systemctl --user start homekit-camera.service
+systemctl --user status homekit-camera.service
+journalctl --user -f -u homekit-camera.service
+```
+
+Enable the service:
+
+```bash
+loginctl enable-linger $USER
+systemctl --user enable --now homekit-camera.service
+```
