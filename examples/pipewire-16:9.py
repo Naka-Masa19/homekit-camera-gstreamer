@@ -51,10 +51,10 @@ driver = AccessoryDriver(port=51826)
 source = "pipewiresrc use-bufferpool=false"
 
 # raw video source
-#source = "pipewiresrc use-bufferpool=false ! video/x-raw, format=YUY2, width=1920, height=1080, framerate=30/1"
+# source = "pipewiresrc use-bufferpool=false ! video/x-raw, format=YUY2, width=1920, height=1080, framerate=30/1"
 
 # MJPEG camera source
-#source = "pipewiresrc use-bufferpool=false ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
+# source = "pipewiresrc use-bufferpool=false ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
 
 acc = GstCamera(source, options, driver, "Camera")
 driver.add_accessory(acc)
