@@ -40,6 +40,7 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
 - PC
     - OS: Fedora Linux 44 (Workstation Edition)
     - Source: PipeWire
+    - Camera: MJPEGカメラ
     - Python: 3.14.6
     - GStreamer: 1.28.6
     - Encoder: `openh264enc`
@@ -84,6 +85,7 @@ wpctl set-default [カメラのID]
 ``` bash
 python3 camera.py
 ```
+> `pipewiresrc` は環境によって低い解像度や意図しないフォーマットを選択する場合があります。必要に応じて、サンプルコード内の `source` をカメラに合わせて変更してください。特に Raspberry Pi Camera Moduleでは、色が正しく表示されない場合があります。
 
 ### 4. サービスとして登録
 以下の内容のファイルを`~/.config/systemd/user/homekit-camera.service`に配置してください。

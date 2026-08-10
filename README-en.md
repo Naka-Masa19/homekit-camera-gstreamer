@@ -37,6 +37,7 @@ It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network strea
 - PC
   - OS: Fedora Linux 44 (Workstation Edition)
   - Source: PipeWire
+  - Camera: MJPEG camera
   - Python: 3.14.6
   - GStreamer: 1.28.6
   - Encoder: `openh264enc`
@@ -91,6 +92,8 @@ Run the saved file:
 ```bash
 python3 camera.py
 ```
+
+> Depending on the environment, `pipewiresrc` may select a low resolution or an unintended format. Update `source` in the sample code as needed to match your camera. In particular, colors may not display correctly with Raspberry Pi Camera Modules.
 
 ### 4. Register as a Service
 Place a file with the following contents at `~/.config/systemd/user/homekit-camera.service`:
