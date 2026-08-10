@@ -53,8 +53,10 @@ options = {
 # Start the accessory on port 51826
 driver = AccessoryDriver(port=51826)
 
+
 class Source(Gst.Bin):
     """pipewiresrc use-bufferpool=false ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"""
+
     def __init__(self):
         super().__init__()
 
@@ -75,6 +77,7 @@ class Source(Gst.Bin):
         ghost_pad = Gst.GhostPad.new("src", jpegdec.get_static_pad("src"))
         ghost_pad.set_active(True)
         self.add_pad(ghost_pad)
+
 
 acc = GstCamera(Source, options, driver, "Camera")
 driver.add_accessory(acc)
