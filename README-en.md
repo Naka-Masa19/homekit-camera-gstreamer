@@ -45,7 +45,7 @@ It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network strea
 ### Debian (Ubuntu, Raspberry Pi OS)
 ```bash
 sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad libgstreamer1.0-0 gir1.2-gst-plugins-base-1.0 python3-gst-1.0 python3-gi python3-pip
-pip3 install git+https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer.git --break-system-packages
+pip3 install git+https://github.com/Naka-Masa19/homekit-camera-gstreamer.git --break-system-packages
 ```
 
 ## Configuration Example (Camera via PipeWire)
