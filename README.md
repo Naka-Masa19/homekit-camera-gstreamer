@@ -27,7 +27,7 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
 - ストリーミング中の動的な解像度変更
     - HomeKitからの要求に応じて、ストリーミング中でも解像度を変更できます。
 
-## 動作確認済み環境
+## 動作確認済みの環境
 - Raspberry Pi
     - Model: Raspberry Pi 3 Model B Plus
     - OS: Ubuntu Server 26.04 LTS
