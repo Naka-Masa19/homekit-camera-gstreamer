@@ -3,6 +3,10 @@
 
 [![Lint](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml)
 
+This Python library exposes GStreamer video sources as HomeKit cameras in Apple Home.
+
+It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network streams as inputs. It automatically selects a supported encoder and lets multiple Apple devices view the video simultaneously.
+
 ## Features
 - Supports multiple simultaneous streams
   - Streams can be served to multiple devices at the same time.
@@ -47,7 +51,7 @@ pip3 install git+https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer.g
 
 ## Configuration Example (Camera via PipeWire)
 
-### Install PipeWire
+### 1. Install PipeWire
 ```bash
 sudo apt install pipewire wireplumber gstreamer1.0-pipewire
 ```
@@ -64,7 +68,7 @@ sudo apt install pipewire wireplumber gstreamer1.0-pipewire
 > sudo apt install pipewire-libcamera libcamera-ipa
 > ```
 
-### Set the Default Camera
+### 2. Set the Default Camera
 ```bash
 wpctl status
 wpctl set-default [camera ID]
@@ -72,8 +76,8 @@ wpctl set-default [camera ID]
 
 > Replace `[camera ID]` with the ID shown under `Sources` in the output of `wpctl status`.
 
-### Run
-Choose the sample that matches the aspect ratio of the camera you want to use.
+### 3. Run
+Choose the sample that matches the aspect ratio of the camera you want to use, and save it as `camera.py`.
 
 [Sample code for 16:9 cameras](examples/pipewire-16:9.py)
 
@@ -83,7 +87,13 @@ Choose the sample that matches the aspect ratio of the camera you want to use.
 
 - Raspberry Pi Camera Module 1 / 2, among others
 
-### Register as a Service (Linux)
+Run the saved file:
+
+```bash
+python3 camera.py
+```
+
+### 4. Register as a Service
 Place a file with the following contents at `~/.config/systemd/user/homekit-camera.service`:
 
 ```ini
@@ -93,7 +103,7 @@ Wants=pipewire.service
 After=pipewire.service network-online.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/USER/HomeKit/__main__.py
+ExecStart=/usr/bin/python3 /home/USER/camera.py
 Restart=on-failure
 #WorkingDirectory=/home/USER/HomeKit
 
@@ -117,3 +127,7 @@ Enable the service:
 loginctl enable-linger $USER
 systemctl --user enable --now homekit-camera.service
 ```
+
+## License
+
+This project is released under the [Apache License 2.0](LICENSE). For third-party license notices included with the sample code, see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).

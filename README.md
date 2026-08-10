@@ -1,7 +1,13 @@
 # HomeKit Camera GStreamer
-[English](README-en.md)
+
+[English version](README-en.md)
 
 [![Lint](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml)
+
+GStreamer の映像ソースを、Apple Home の HomeKit カメラとして公開するための Python ライブラリです。
+
+Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワークストリームなどを入力として利用できます。
+対応するエンコーダーを自動選択し、複数の Apple デバイスから同時に映像を確認できます。
 
 ## 特徴
 - マルチストリーミング対応
@@ -46,7 +52,7 @@ pip3 install git+https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer.g
 ```
 ## 構成例 (PipeWire経由のカメラ)
 
-### PipeWireのインストール
+### 1. PipeWireのインストール
 ```bash
 sudo apt install pipewire wireplumber gstreamer1.0-pipewire
 ```
@@ -58,15 +64,15 @@ sudo apt install pipewire wireplumber gstreamer1.0-pipewire
 > ```bash
 > sudo apt install pipewire-libcamera libcamera-ipa
 > ```
-### デフォルトカメラの設定
+### 2. デフォルトカメラの設定
 ``` bash
 wpctl status
 wpctl set-default [カメラのID]
 ```
 > [カメラのID]はwpctl statusのSourcesの結果に合わせて書き換えて下さい。
 
-### 実行
-使用するカメラのアスペクト比に合わせてサンプルを選択してください。
+### 3. 実行
+使用するカメラのアスペクト比に合わせてサンプルを選び、`camera.py`という名前で保存してください。
 
 [16:9カメラ向けサンプルコード](examples/pipewire-16:9.py)
 - 一般的なカメラ、Raspberry Pi Camera Module 3など
@@ -74,7 +80,12 @@ wpctl set-default [カメラのID]
 [4:3カメラ向けサンプルコード](examples/pipewire-4:3.py)
 - Raspberry Pi Camera Module 1 / 2など
 
-### サービスとして登録 (Linux)
+保存したファイルを実行します。
+``` bash
+python3 camera.py
+```
+
+### 4. サービスとして登録
 以下の内容のファイルを`~/.config/systemd/user/homekit-camera.service`に配置してください。
 ``` ini
 [Unit]
@@ -83,7 +94,7 @@ Wants=pipewire.service
 After=pipewire.service network-online.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/USER/HomeKit/__main__.py
+ExecStart=/usr/bin/python3 /home/USER/camera.py
 Restart=on-failure
 #WorkingDirectory=/home/USER/HomeKit
 
@@ -103,3 +114,9 @@ journalctl --user -f -u homekit-camera.service
 loginctl enable-linger $USER
 systemctl --user enable --now homekit-camera.service
 ```
+
+## ライセンス
+
+このプロジェクトは [Apache License 2.0](LICENSE) で公開されています。
+サンプルコードに含まれる第三者ライセンスの通知は
+[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) を参照してください。
