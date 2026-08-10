@@ -1,14 +1,6 @@
-"""An example of how to setup and start an Accessory.
-
-This is:
-1. Create the Accessory object you want.
-2. Add it to an AccessoryDriver, which will advertise it on the local network,
-    setup a server to answer client queries, etc.
-"""
-
 import logging
 
-logging.basicConfig(level=logging.INFO)  # , format="[%(module)s] %(message)s")
+logging.basicConfig(level=logging.INFO)
 
 import signal
 from pyhap.accessory_driver import AccessoryDriver
@@ -54,7 +46,16 @@ options = {
 # Start the accessory on port 51826
 driver = AccessoryDriver(port=51826)
 
-source = "pipewiresrc ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
+
+# Pipewire camera source
+source = "pipewiresrc use-bufferpool=false"
+
+# raw video source
+#source = "pipewiresrc use-bufferpool=false ! video/x-raw, format=YUY2, width=1920, height=1080, framerate=30/1"
+
+# MJPEG camera source
+#source = "pipewiresrc use-bufferpool=false ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
+
 acc = GstCamera(source, options, driver, "Camera")
 driver.add_accessory(acc)
 
