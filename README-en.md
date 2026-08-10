@@ -1,7 +1,6 @@
 # HomeKit Camera GStreamer
-[日本語](README.md)
 
-[![Lint](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/j6yrfbckhh-collab/homekit-camera-gstreamer/actions/workflows/lint.yml)
+[![Lint](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml)
 
 This Python library exposes GStreamer video sources as HomeKit cameras in Apple Home.
 
