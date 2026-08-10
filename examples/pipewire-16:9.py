@@ -1,3 +1,5 @@
+"""Example of using a 16:9 camera through PipeWire."""
+
 import logging
 
 logging.basicConfig(level=logging.INFO)

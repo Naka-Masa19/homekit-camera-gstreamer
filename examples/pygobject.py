@@ -1,19 +1,14 @@
-"""An example of how to setup and start an Accessory.
-
-This is:
-1. Create the Accessory object you want.
-2. Add it to an AccessoryDriver, which will advertise it on the local network,
-    setup a server to answer client queries, etc.
-"""
+"""Example of using an MJPEG camera through PipeWire with PyGObject."""
 
 import logging
 
-logging.basicConfig(level=logging.INFO)  # , format="[%(module)s] %(message)s")
+logging.basicConfig(level=logging.INFO)
 
 import signal
 from pyhap.accessory_driver import AccessoryDriver
 from pyhap import camera, util
 from gst_camera import GstCamera
+
 from gi import require_version
 
 require_version("Gst", "1.0")
@@ -37,15 +32,13 @@ options = {
         },
         "resolutions": [
             # Width, Height, framerate
+            [1920, 1080, 30],  # FHD
+            [1280, 720, 30],  # HD
+            [960, 540, 30],  # qHD
+            [640, 360, 30],  # 360p
+            [480, 270, 30],  # 270p
+            [320, 180, 30],  # 180p
             [320, 240, 15],  # Required for Apple Watch
-            [1024, 768, 30],
-            [1920, 1080, 30],
-            [640, 480, 30],
-            [640, 360, 30],
-            [480, 360, 30],
-            [480, 270, 30],
-            [320, 240, 30],
-            [320, 180, 30],
         ],
     },
     "audio": {
@@ -60,12 +53,13 @@ options = {
 # Start the accessory on port 51826
 driver = AccessoryDriver(port=51826)
 
-
-class source(Gst.Bin):  # noqa: N801
+class Source(Gst.Bin):
+    """pipewiresrc use-bufferpool=false ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"""
     def __init__(self):
         super().__init__()
+
         src = self.make_and_add("pipewiresrc")
-        # src.set_properties(use_bufferpool=False)
+        src.set_properties(use_bufferpool=False)
 
         capsfilter = self.make_and_add("capsfilter")
         caps = Gst.Caps.new_empty_simple("image/jpeg")
@@ -82,9 +76,7 @@ class source(Gst.Bin):  # noqa: N801
         ghost_pad.set_active(True)
         self.add_pad(ghost_pad)
 
-
-# source = "pipewiresrc ! image/jpeg, width=1920, height=1080, framerate=30/1 ! jpegdec"
-acc = GstCamera(source, options, driver, "Camera")
+acc = GstCamera(Source, options, driver, "Camera")
 driver.add_accessory(acc)
 
 # We want KeyboardInterrupts and SIGTERM (terminate) to be handled by the driver itself,
