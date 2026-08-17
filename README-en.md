@@ -82,11 +82,11 @@ wpctl set-default [camera ID]
 ### 3. Run
 Choose the sample that matches the aspect ratio of the camera you want to use, and save it as `camera.py`.
 
-[Sample code for 16:9 cameras](examples/pipewire-16:9.py)
+[Sample code for 16:9 cameras](examples/pipewire-16-9.py)
 
 - General-purpose cameras and Raspberry Pi Camera Module 3, among others
 
-[Sample code for 4:3 cameras](examples/pipewire-4:3.py)
+[Sample code for 4:3 cameras](examples/pipewire-4-3.py)
 
 - Raspberry Pi Camera Module 1 / 2, among others
 
