@@ -6,6 +6,10 @@ This Python library exposes GStreamer video sources as HomeKit cameras in Apple 
 
 It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network streams as inputs. It automatically selects a supported encoder and lets multiple Apple devices view the video simultaneously.
 
+---
+[Sample programs](/examples)\\
+[Wiki](https://github.com/Naka-Masa19/homekit-camera-gstreamer/wiki)
+
 ## Features
 - Supports multiple simultaneous streams
   - Streams can be served to multiple devices at the same time.
@@ -20,6 +24,7 @@ It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network strea
 - Automatic H.264 encoder selection (`encodebin`)
   - `openh264enc`
   - `v4l2h264enc`
+  - `vtenc_h264`
   - etc.
 - Dynamic resolution changes while streaming
   - The resolution can be changed during streaming in response to requests from HomeKit.
@@ -52,6 +57,9 @@ pip3 install git+https://github.com/Naka-Masa19/homekit-camera-gstreamer.git --b
 ``` zsh
 pip3 install git+https://github.com/Naka-Masa19/homekit-camera-gstreamer.git
 ```
+
+> The first startup may take some time.
+
 ## Configuration Example (Camera via PipeWire)
 
 ### 1. Install PipeWire
@@ -96,7 +104,7 @@ Run the saved file:
 python3 camera.py
 ```
 
-> Depending on the environment, `pipewiresrc` may select a low resolution or an unintended format. Update `source` in the sample code as needed to match your camera. In particular, colors may not display correctly with Raspberry Pi Camera Modules.
+> Depending on the environment, `pipewiresrc` may select a low resolution, a narrow field of view, or an unintended format. Update `source` in the sample code as needed to match your camera. In particular, colors may not display correctly and the field of view may be narrow with Raspberry Pi Camera Modules.
 
 ### 4. Register as a Service
 Place a file with the following contents at `~/.config/systemd/user/homekit-camera.service`:

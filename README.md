@@ -9,6 +9,10 @@ GStreamer の映像ソースを、Apple Home の HomeKit カメラとして公�
 Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワークストリームなどを入力として利用できます。
 対応するエンコーダーを自動選択し、複数の Apple デバイスから同時に映像を確認できます。
 
+---
+[サンプルプログラム](/examples)\
+[Wiki](https://github.com/Naka-Masa19/homekit-camera-gstreamer/wiki)
+
 ## 特徴
 - マルチストリーミング対応
     - 複数のデバイスへ同時にストリーミングできます。
@@ -23,6 +27,7 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
 - H.264エンコーダーの自動選択 (encodebin)
     - `openh264enc`
     - `v4l2h264enc`
+    - `vtenc_h264`
     - etc.
 - ストリーミング中の動的な解像度変更
     - HomeKitからの要求に応じて、ストリーミング中でも解像度を変更できます。
@@ -55,6 +60,8 @@ pip3 install git+https://github.com/Naka-Masa19/homekit-camera-gstreamer.git --b
 ``` zsh
 pip3 install git+https://github.com/Naka-Masa19/homekit-camera-gstreamer.git
 ```
+> 初回起動時、時間がかかることがあります。
+
 ## 構成例 (PipeWire経由のカメラ)
 
 ### 1. PipeWireのインストール
@@ -89,7 +96,7 @@ wpctl set-default [カメラのID]
 ``` bash
 python3 camera.py
 ```
-> `pipewiresrc` は環境によって低い解像度や意図しないフォーマットを選択する場合があります。必要に応じて、サンプルコード内の `source` をカメラに合わせて変更してください。特に Raspberry Pi Camera Moduleでは、色が正しく表示されない場合があります。
+> `pipewiresrc` は環境によって低い解像度や狭い撮影範囲、意図しないフォーマットを選択する場合があります。必要に応じて、サンプルコード内の `source` をカメラに合わせて変更してください。特に Raspberry Pi Camera Moduleでは、色が正しく表示されず、撮影範囲も狭くなる場合があります。
 
 ### 4. サービスとして登録
 以下の内容のファイルを`~/.config/systemd/user/homekit-camera.service`に配置してください。
