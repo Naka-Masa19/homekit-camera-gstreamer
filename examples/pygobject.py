@@ -1,3 +1,6 @@
+# Adapted from HAP-python's camera_main.py and modified for this project.
+# Original: https://github.com/ikalchev/HAP-python/blob/dev/camera_main.py
+# Licensed under the Apache License, Version 2.0. See ../THIRD_PARTY_LICENSES.md.
 """Example of using an MJPEG camera through PipeWire with PyGObject."""
 
 import logging
