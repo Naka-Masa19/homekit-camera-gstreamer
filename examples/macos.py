@@ -61,12 +61,12 @@ source = "avfvideosrc"
 # screen capture source
 # source = "avfvideosrc capture-screen=true"
 
-camera = GstCamera(source, options, driver, "Camera")
+acc = GstCamera(source, options, driver, "Camera")
 
 # Required for stable realtime streaming with VideoToolbo
-camera.encoder_properties["allow-frame-reordering"] = False
+acc.encoder_properties["allow-frame-reordering"] = False
 
-driver.add_accessory(camera)
+driver.add_accessory(acc)
 
 # We want KeyboardInterrupts and SIGTERM (terminate) to be handled by the driver itself,
 # so that it can gracefully stop the accessory, server and advertising.

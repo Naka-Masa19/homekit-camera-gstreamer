@@ -170,6 +170,7 @@ class GstCamera(camera.Camera):
         self.src = (lambda: Gst.parse_bin_from_description(f"{source} ! identity", True)) if isinstance(source, str) else source
         self.ignore_reconfig = False
         self.pre_encoder_format = None
+        self.snapshot_warmup_frames = 0
         self.encoder_properties = Gst.Structure.new_empty("encoder_properties")
         self.snapshot_pipeline = Gst.Pipeline.new()
         self.snapshot_bus = self.snapshot_pipeline.get_bus()
@@ -222,6 +223,16 @@ class GstCamera(camera.Camera):
             case _:
                 raise TypeError("encoder_properties must be dict, Gst.Structure or None")
 
+    @property
+    def snapshot_warmup_frames(self):
+        return self._snapshot_warmup_frames
+
+    @snapshot_warmup_frames.setter
+    def snapshot_warmup_frames(self, arg: int):
+        if not isinstance(arg, int):
+            raise TypeError("snapshot_warmup_frames must be int")
+        self._snapshot_warmup_frames = arg
+
     async def stop(self):  # stop accessary
         self.snapshot_pipeline.set_state(Gst.State.NULL)
         return await super().stop()
@@ -252,6 +263,7 @@ class GstCamera(camera.Camera):
         caps.set_value("height", info["image-height"])
         self.snapshot_caps.set_properties(caps=caps)
         self.snapshot_pipeline.set_state(Gst.State.PLAYING)
-        sample = self.snapshot_sink.try_pull_sample(Gst.SECOND * 5)
+        for _ in range(self.snapshot_warmup_frames + 1):
+            sample = self.snapshot_sink.try_pull_sample(Gst.SECOND * 5)
         self.snapshot_pipeline.set_state(self.snapshot_pipeline_wait_state)
         return buf.extract_dup(0, buf.get_size()) if sample and (buf := sample.get_buffer()) else super().get_snapshot(info)
