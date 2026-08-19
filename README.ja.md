@@ -1,6 +1,6 @@
 # HomeKit Camera GStreamer
 
-[English version](README-en.md)
+[English version](README.md)
 
 [![Lint](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml)
 
