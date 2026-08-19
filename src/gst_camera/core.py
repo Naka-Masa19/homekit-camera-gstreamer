@@ -263,7 +263,6 @@ class GstCamera(camera.Camera):
         caps.set_value("width", info["image-width"])
         caps.set_value("height", info["image-height"])
         self.snapshot_caps.set_properties(caps=caps)
-        logger.info("sessions "+str(self.sessions))
         if self._is_source_exclusive and len(self.sessions) == 1:
             sample = None
         else:
