@@ -21,6 +21,7 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
     - PipeWire
     - USB/Webカメラ
     - Raspberry Pi Camera Module
+    - 画面共有 (macOS / Windows対応、Wayland未対応)
     - ネットワークストリーム
     - ファイル
     - etc.

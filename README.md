@@ -20,6 +20,7 @@ It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network strea
   - PipeWire
   - USB/webcams
   - Raspberry Pi Camera Modules
+  - Screen capture (macOS / Windows; Wayland not yet supported)
   - Network streams
   - Files
   - etc.
