@@ -166,7 +166,8 @@ class GstCamera(camera.Camera):
     def __init__(self, source: str | Callable[[], Gst.Bin], options, *args, **kwargs):
         super().__init__(options, *args, **kwargs)
         self.set_info_service(firmware_revision=Gst.version_string())
-        self.snapshot_pipeline_wait_state = Gst.State.NULL if options.get("stream_count", 1) == 1 else Gst.State.READY
+        self._is_source_exclusive = options.get("stream_count", 1) == 1
+        self._snapshot_pipeline_wait_state = Gst.State.NULL if self._is_source_exclusive else Gst.State.READY
         self.src = (lambda: Gst.parse_bin_from_description(f"{source} ! identity", True)) if isinstance(source, str) else source
         self.ignore_reconfig = False
         self.pre_encoder_format = None
@@ -193,7 +194,7 @@ class GstCamera(camera.Camera):
 
         Gst.Element.link_many(snapshot_src, snapshot_convertscale, self.snapshot_caps, snapshot_jpegenc, self.snapshot_sink)
 
-        self.snapshot_pipeline.set_state(self.snapshot_pipeline_wait_state)
+        self.snapshot_pipeline.set_state(self._snapshot_pipeline_wait_state)
 
     @property
     def pre_encoder_format(self):
@@ -262,8 +263,12 @@ class GstCamera(camera.Camera):
         caps.set_value("width", info["image-width"])
         caps.set_value("height", info["image-height"])
         self.snapshot_caps.set_properties(caps=caps)
-        self.snapshot_pipeline.set_state(Gst.State.PLAYING)
-        for _ in range(self.snapshot_warmup_frames + 1):
-            sample = self.snapshot_sink.try_pull_sample(Gst.SECOND * 5)
-        self.snapshot_pipeline.set_state(self.snapshot_pipeline_wait_state)
+        logger.info("sessions "+str(self.sessions))
+        if self._is_source_exclusive and len(self.sessions) == 1:
+            sample = None
+        else:
+            self.snapshot_pipeline.set_state(Gst.State.PLAYING)
+            for _ in range(self.snapshot_warmup_frames + 1):
+                sample = self.snapshot_sink.try_pull_sample(Gst.SECOND * 5)
+            self.snapshot_pipeline.set_state(self._snapshot_pipeline_wait_state)
         return buf.extract_dup(0, buf.get_size()) if sample and (buf := sample.get_buffer()) else super().get_snapshot(info)
