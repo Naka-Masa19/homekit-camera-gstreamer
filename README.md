@@ -1,56 +1,53 @@
 # HomeKit Camera GStreamer
 
-[English version](README-en.md)
-
 [![Lint](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml)
 
-GStreamer の映像ソースを、Apple Home の HomeKit カメラとして公開するための Python ライブラリです。
+This Python library exposes GStreamer video sources as HomeKit cameras in Apple Home.
 
-Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワークストリームなどを入力として利用できます。
-対応するエンコーダーを自動選択し、複数の Apple デバイスから同時に映像を確認できます。
+It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network streams as inputs. It automatically selects a supported encoder and lets multiple Apple devices view the video simultaneously.
 
 ---
-[サンプルプログラム](/examples)\
+[Sample programs](/examples)\
 [Wiki](https://github.com/Naka-Masa19/homekit-camera-gstreamer/wiki)
 
-## 特徴
-- マルチストリーミング対応
-    - 複数のデバイスへ同時にストリーミングできます。
-    - PipeWireやネットワークストリームなど、複数クライアントから同時に利用できる入力ソースが必要です。
-- GStreamerが対応しているほぼすべてのソースに対応
-    - PipeWire
-    - USB/Webカメラ
-    - Raspberry Pi Camera Module
-    - ネットワークストリーム
-    - ファイル
-    - etc.
-- H.264エンコーダーの自動選択 (`encodebin`)
-    - `openh264enc`
-    - `v4l2h264enc`
-    - `vtenc_h264`
-    - etc.
-- ストリーミング中の動的な解像度変更
-    - HomeKitからの要求に応じて、ストリーミング中でも解像度を変更できます。
+## Features
+- Supports multiple simultaneous streams
+  - Streams can be served to multiple devices at the same time.
+  - An input source that supports simultaneous use by multiple clients is required, such as PipeWire or a network stream.
+- Supports nearly every source supported by GStreamer
+  - PipeWire
+  - USB/webcams
+  - Raspberry Pi Camera Modules
+  - Network streams
+  - Files
+  - etc.
+- Automatic H.264 encoder selection (`encodebin`)
+  - `openh264enc`
+  - `v4l2h264enc`
+  - `vtenc_h264`
+  - etc.
+- Dynamic resolution changes while streaming
+  - The resolution can be changed during streaming in response to requests from HomeKit.
 
-## 動作確認済みの環境
+## Tested Environments
 - Raspberry Pi
-    - Model: Raspberry Pi 3 Model B Plus
-    - OS: Ubuntu Server 26.04 LTS
-    - Kernel: 7.0.0-1016-raspi
-    - Source: PipeWire
-    - Camera: Raspberry Pi Camera Module 2 (IMX219)
-    - Python: 3.14.4
-    - GStreamer: 1.28.2
-    - Encoder: `v4l2h264enc`
+  - Model: Raspberry Pi 3 Model B Plus
+  - OS: Ubuntu Server 26.04 LTS
+  - Kernel: 7.0.0-1016-raspi
+  - Source: PipeWire
+  - Camera: Raspberry Pi Camera Module 2 (IMX219)
+  - Python: 3.14.4
+  - GStreamer: 1.28.2
+  - Encoder: `v4l2h264enc`
 - PC
-    - OS: Fedora Linux 44 (Workstation Edition)
-    - Source: PipeWire
-    - Camera: MJPEGカメラ
-    - Python: 3.14.6
-    - GStreamer: 1.28.6
-    - Encoder: `openh264enc`
+  - OS: Fedora Linux 44 (Workstation Edition)
+  - Source: PipeWire
+  - Camera: MJPEG camera
+  - Python: 3.14.6
+  - GStreamer: 1.28.6
+  - Encoder: `openh264enc`
 
-## インストール
+## Installation
 ### Debian (Ubuntu, Raspberry Pi OS)
 ```bash
 sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad libgstreamer1.0-0 gir1.2-gst-plugins-base-1.0 python3-gst-1.0 python3-gi python3-pip
@@ -60,47 +57,59 @@ pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/do
 ``` zsh
 pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.0/homekit_camera_gstreamer-1.0-py3-none-any.whl
 ```
-> 初回起動時、時間がかかることがあります。
 
-## 構成例 (PipeWire経由のカメラ)
+> The first startup may take some time.
 
-### 1. PipeWireのインストール
+## Configuration Example (Camera via PipeWire)
+
+### 1. Install PipeWire
 ```bash
 sudo apt install pipewire wireplumber gstreamer1.0-pipewire
 ```
-> Raspberry Pi Camera Moduleなどlibcameraを使用するカメラの場合は追加で以下のパッケージが必要です。
+
+> Cameras that use libcamera, such as Raspberry Pi Camera Modules, also require the following packages:
+>
 > ```bash
 > sudo apt install libspa-0.2-libcamera libcamera-ipa
 > ```
-> `libspa-0.2-libcamera` が利用できない環境では、以下を試してください。
+>
+> If `libspa-0.2-libcamera` is not available in your environment, try the following instead:
+>
 > ```bash
 > sudo apt install pipewire-libcamera libcamera-ipa
 > ```
-### 2. デフォルトカメラの設定
-``` bash
+
+### 2. Set the Default Camera
+```bash
 wpctl status
-wpctl set-default [カメラのID]
+wpctl set-default [camera ID]
 ```
-> [カメラのID]はwpctl statusのSourcesの結果に合わせて書き換えて下さい。
 
-### 3. 実行
-使用するカメラのアスペクト比に合わせてサンプルを選び、`camera.py`という名前で保存してください。
+> Replace `[camera ID]` with the ID shown under `Sources` in the output of `wpctl status`.
 
-[16:9カメラ向けサンプルコード](examples/pipewire-16-9.py)
-- 一般的なカメラ、Raspberry Pi Camera Module 3など
+### 3. Run
+Choose the sample that matches the aspect ratio of the camera you want to use, and save it as `camera.py`.
 
-[4:3カメラ向けサンプルコード](examples/pipewire-4-3.py)
-- Raspberry Pi Camera Module 1 / 2など
+[Sample code for 16:9 cameras](examples/pipewire-16-9.py)
 
-保存したファイルを実行します。
-``` bash
+- General-purpose cameras and Raspberry Pi Camera Module 3, among others
+
+[Sample code for 4:3 cameras](examples/pipewire-4-3.py)
+
+- Raspberry Pi Camera Module 1 / 2, among others
+
+Run the saved file:
+
+```bash
 python3 camera.py
 ```
-> `pipewiresrc` は環境によって低い解像度や狭い撮影範囲、意図しないフォーマットを選択する場合があります。必要に応じて、サンプルコード内の `source` をカメラに合わせて変更してください。特に Raspberry Pi Camera Moduleでは、色が正しく表示されず、撮影範囲も狭くなる場合があります。
 
-### 4. サービスとして登録
-以下の内容のファイルを`~/.config/systemd/user/homekit-camera.service`に配置してください。
-``` ini
+> Depending on the environment, `pipewiresrc` may select a low resolution, a narrow field of view, or an unintended format. Update `source` in the sample code as needed to match your camera. In particular, colors may not display correctly and the field of view may be narrow with Raspberry Pi Camera Modules.
+
+### 4. Register as a Service
+Place a file with the following contents at `~/.config/systemd/user/homekit-camera.service`:
+
+```ini
 [Unit]
 Description=HomeKit camera daemon
 Wants=pipewire.service
@@ -114,22 +123,24 @@ Restart=on-failure
 [Install]
 WantedBy=default.target
 ```
-> ExecStart のパスは、プログラムを配置した場所に合わせて変更してください。
 
-サービスのテスト
-``` bash
+> Update the path in `ExecStart` to match where you installed the program.
+
+Test the service:
+
+```bash
 systemctl --user start homekit-camera.service
 systemctl --user status homekit-camera.service
 journalctl --user -f -u homekit-camera.service
 ```
-サービスの有効化
-``` bash
+
+Enable the service:
+
+```bash
 loginctl enable-linger $USER
 systemctl --user enable --now homekit-camera.service
 ```
 
-## ライセンス
+## License
 
-このプロジェクトは [Apache License 2.0](LICENSE) で公開されています。
-サンプルコードに含まれる第三者ライセンスの通知は
-[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) を参照してください。
+This project is released under the [Apache License 2.0](LICENSE). For third-party license notices included with the sample code, see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
