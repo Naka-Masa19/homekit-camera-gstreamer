@@ -4,7 +4,8 @@ version = "1.0"
 requires-python = ">=3.10"
 dependencies = [
     "HAP-Python",
-    "gstreamer-meta; sys_platform == 'darwin' or sys_platform == 'win32'",
+    "gstreamer-meta; sys_platform == 'darwin'",
+    "gstreamer-meta; sys_platform == 'win32'",
 ]
 license = "Apache-2.0"
 
