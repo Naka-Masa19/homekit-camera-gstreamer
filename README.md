@@ -54,11 +54,11 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
 ### Debian (Ubuntu, Raspberry Pi OS)
 ```bash
 sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad libgstreamer1.0-0 gir1.2-gst-plugins-base-1.0 python3-gst-1.0 python3-gi python3-pip
-pip3 install git+https://github.com/Naka-Masa19/homekit-camera-gstreamer.git --break-system-packages
+pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.0/homekit_camera_gstreamer-1.0-py3-none-any.whl --break-system-packages
 ```
 ### macOS / Windows
 ``` zsh
-pip3 install git+https://github.com/Naka-Masa19/homekit-camera-gstreamer.git
+pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.0/homekit_camera_gstreamer-1.0-py3-none-any.whl
 ```
 > 初回起動時、時間がかかることがあります。
 
