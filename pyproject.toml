@@ -7,7 +7,7 @@ dependencies = [
     "gstreamer-meta; sys_platform == 'darwin'",
     "gstreamer-meta; sys_platform == 'win32'",
 ]
-license = "Apache-2.0"
+license =  { file = "LICENSE" }
 
 [build-system]
 requires = ["setuptools>=61.0"]
