@@ -7,7 +7,7 @@ This Python library exposes GStreamer video sources as HomeKit cameras in Apple 
 It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network streams as inputs. It automatically selects a supported encoder and lets multiple Apple devices view the video simultaneously.
 
 ---
-[Sample programs](/examples)\\
+[Sample programs](/examples)\
 [Wiki](https://github.com/Naka-Masa19/homekit-camera-gstreamer/wiki)
 
 ## Features

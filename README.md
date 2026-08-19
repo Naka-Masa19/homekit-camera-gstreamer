@@ -24,7 +24,7 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
     - ネットワークストリーム
     - ファイル
     - etc.
-- H.264エンコーダーの自動選択 (encodebin)
+- H.264エンコーダーの自動選択 (`encodebin`)
     - `openh264enc`
     - `v4l2h264enc`
     - `vtenc_h264`
