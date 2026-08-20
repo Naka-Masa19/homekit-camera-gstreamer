@@ -9,9 +9,9 @@ from gi import require_versions
 require_versions({"Gst": "1.0", "GstApp": "1.0", "GstPbutils": "1.0"})
 from gi.repository import Gst, GstApp, GstPbutils  # type:ignore
 
-Gst.init()
-
 logger = logging.getLogger(__name__)
+logger.info(f"Initializing GStreamer")
+Gst.init()
 logger.info(f"Initialized {Gst.version_string()}")
 
 _ENCODE_PROFILE = {
