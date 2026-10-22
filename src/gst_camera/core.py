@@ -57,10 +57,12 @@ class StreamingSession:
         stream_config: dict,
         pre_encoder_format: str | None,
         encoder_properties: Gst.Structure,
+        ignore_h264_level: bool,
     ):
         self.stream_config = stream_config
         self.pre_encoder_format = pre_encoder_format
         self.encoder_properties = encoder_properties
+        self.ignore_h264_level = ignore_h264_level
         self.pipeline = Gst.Pipeline.new()
         self.bus = self.pipeline.get_bus()
 
@@ -95,7 +97,8 @@ class StreamingSession:
 
         enc_format = Gst.Caps.new_empty_simple("video/x-h264")
         enc_format.set_value("profile", _ENCODE_PROFILE[self.stream_config["v_profile_id"]])
-        enc_format.set_value("level", _ENCODE_LEVEL[self.stream_config["v_level"]])
+        if not self.ignore_h264_level:
+            enc_format.set_value("level", _ENCODE_LEVEL[self.stream_config["v_level"]])
         enc_format.set_value("bitrate", self.stream_config["v_max_bitrate"])
 
         enc_restriction = Gst.Caps.new_empty_simple("video/x-raw")
@@ -170,6 +173,7 @@ class GstCamera(camera.Camera):
         self._snapshot_pipeline_wait_state = Gst.State.NULL if self._is_source_exclusive else Gst.State.READY
         self.src = (lambda: Gst.parse_bin_from_description(f"{source} ! identity", True)) if isinstance(source, str) else source
         self.ignore_reconfig = False
+        self.ignore_h264_level = False
         self.pre_encoder_format = None
         self.snapshot_warmup_frames = 0
         self.encoder_properties = Gst.Structure.new_empty("encoder_properties")
@@ -241,7 +245,7 @@ class GstCamera(camera.Camera):
     async def start_stream(self, session_info, stream_config):
         logger.info(f"[{session_info['id']}] Starting stream")
         session_info["streaming_instance"] = self.StreamingSessionClass(
-            self.src, stream_config, self.pre_encoder_format, self.encoder_properties
+            self.src, stream_config, self.pre_encoder_format, self.encoder_properties, self.ignore_h264_level
         )
         return await asyncio.to_thread(session_info["streaming_instance"].start_stream)
 
