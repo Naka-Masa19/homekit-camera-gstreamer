@@ -63,7 +63,7 @@ source = "avfvideosrc"
 
 acc = GstCamera(source, options, driver, "Camera")
 
-# Required for stable realtime streaming with VideoToolbo
+# Required for stable realtime streaming with VideoToolbox
 acc.encoder_properties["allow-frame-reordering"] = False
 
 driver.add_accessory(acc)
