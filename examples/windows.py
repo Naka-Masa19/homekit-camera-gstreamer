@@ -64,7 +64,7 @@ source = "mfvideosrc"
 # source = "mfvideosrc ! video/x-raw, width=1920, height=1080, framerate=30/1"
 
 # screen capture source
-# source = "d3d11screencapturesrc"
+# source = "d3d12screencapturesrc"
 
 camera = GstCamera(source, options, driver, "Camera")
 driver.add_accessory(camera)
