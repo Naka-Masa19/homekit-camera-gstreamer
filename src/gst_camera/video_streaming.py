@@ -18,6 +18,7 @@ _ENCODE_LEVEL = {
     camera.VIDEO_CODEC_PARAM_LEVEL_TYPES["TYPE4_0"]: "4",
 }
 
+
 class VideoStreaming:
     def __init__(
         self,
