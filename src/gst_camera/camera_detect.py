@@ -1,7 +1,7 @@
 from collections import defaultdict
 from math import gcd
 from pprint import pprint
-from gi.repository import Gst # type: ignore
+from gi.repository import Gst  # type: ignore
 
 Gst.init()
 monitor = Gst.DeviceMonitor()
@@ -10,14 +10,16 @@ monitor.start()
 devices = monitor.get_devices()
 monitor.stop()
 
+
 def convert(data):
-    match (data):
+    match data:
         case Gst.ValueList():
             data = tuple(data)
         case Gst.IntRange():
             tmp = data.range
             data = f"{min(tmp)} ~ {max(tmp)}"
     return data
+
 
 for device in devices:
     print(device.get_display_name())
@@ -32,7 +34,7 @@ for device in devices:
         match (width, height):
             case int(), int():
                 g = gcd(width, height)
-                group = (width//g, height//g)
+                group = (width // g, height // g)
             case _:
                 width = convert(width)
                 height = convert(height)
