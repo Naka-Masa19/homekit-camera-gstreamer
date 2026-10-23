@@ -22,4 +22,4 @@ select = ["E", "F", "W", "N", "UP", "B"]
 
 [tool.ruff.lint.per-file-ignores]
 "examples/*.py" = ["E402"]
-"src/gst_camera/core.py" = ["E402"]
+"src/gst_camera/__init__.py" = ["E402"]
