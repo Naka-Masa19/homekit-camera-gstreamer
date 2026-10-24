@@ -18,9 +18,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install GStreamer
+      - name: Install module
         run: python -m pip install .
 
-      - name: Verify GStreamer bindings
+      - name: Test module
         run: |
-          python -c "import gst_camera"
+          python -c "from gst_camera import camera_detect"
