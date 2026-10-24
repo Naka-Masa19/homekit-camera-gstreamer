@@ -1,0 +1,28 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        python-version: ["3.14"]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install GStreamer
+        run: python -m pip install gstreamer-meta
+
+      - name: Verify GStreamer bindings
+        run: |
+          python -c "import gi"
+          python -c "from gi.repository import Gst; Gst.init(None); print(Gst.version_string())"
