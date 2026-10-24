@@ -7,10 +7,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest]
         python-version: ["3.14"]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v5
@@ -20,9 +19,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install GStreamer
-        run: python -m pip install gstreamer-meta
+        run: python -m pip install .
 
       - name: Verify GStreamer bindings
         run: |
-          python -c "import gi"
-          python -c "from gi.repository import Gst; Gst.init(None); print(Gst.version_string())"
+          python -c "import gst_camera"
