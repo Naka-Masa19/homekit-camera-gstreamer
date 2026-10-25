@@ -1,4 +1,4 @@
-name: Test
+name: pytest
 
 on: [push, pull_request]
 
@@ -19,8 +19,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install module
-        run: python -m pip install .
+        run: python -m pip install . pytest
 
       - name: Test module
         run: |
-          python -c "from gst_camera import camera_detect"
+          python -m pytest tests/
