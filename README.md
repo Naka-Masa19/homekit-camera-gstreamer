@@ -2,6 +2,7 @@
 
 [日本語](README.ja.md)
 
+[![Tests](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/test.yml/badge.svg)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/test.yml)
 [![Lint](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml/badge.svg)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/lint.yml)
 
 This Python library exposes GStreamer video sources as HomeKit cameras in Apple Home.
