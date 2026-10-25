@@ -1,4 +1,4 @@
-name: pytest
+name: Tests
 
 on: [push, pull_request]
 
@@ -22,4 +22,4 @@ jobs:
         run: pip install . pytest
 
       - name: Test module
-        run: pytest
+        run: pytest -s
