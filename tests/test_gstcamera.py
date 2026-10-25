@@ -1,7 +1,11 @@
 import pytest
 from gst_camera import GstCamera
 from pyhap.accessory_driver import AccessoryDriver
-from gi.repository import Gst, GstApp  # type: ignore
+from gi import require_version
+
+require_version("GdkPixbuf", "2.0")
+
+from gi.repository import Gio, GdkPixbuf  # type: ignore  # noqa: E402
 
 
 @pytest.fixture
@@ -21,18 +25,7 @@ def test_snapshot(acc: GstCamera, width: int, height: int):
 
     assert isinstance(snapshot, bytes)
 
-    pipeline = Gst.Pipeline.new()
-    src = GstApp.AppSrc()
-    pipeline.add(src)
-    dec = pipeline.make_and_add("jpegdec")
-    sink = GstApp.AppSink()
-    pipeline.add(sink)
-    Gst.Element.link_many(src, dec, sink)
+    pixbuf = GdkPixbuf.Pixbuf.new_from_stream(Gio.MemoryInputStream.new_from_data(snapshot))
 
-    pipeline.set_state(Gst.State.PLAYING)
-    src.push_buffer(Gst.Buffer.new_wrapped(snapshot))
-    caps = sink.pull_sample().get_caps().get_structure(0)
-    pipeline.set_state(Gst.State.NULL)
-
-    assert caps["width"] == width
-    assert caps["height"] == height
+    assert pixbuf.get_width() == width
+    assert pixbuf.get_height() == height
