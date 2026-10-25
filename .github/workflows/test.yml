@@ -19,8 +19,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install module
-        run: python -m pip install . pytest
+        run: pip install . pytest
 
       - name: Test module
-        run: |
-          python -m pytest tests/
+        run: pytest
