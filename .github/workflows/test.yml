@@ -22,4 +22,4 @@ jobs:
         run: pip install . pytest
 
       - name: Test module
-        run: pytest -s -o log_cli=true
+        run: pytest -s -o log_cli=true --log-cli-level=INFO
