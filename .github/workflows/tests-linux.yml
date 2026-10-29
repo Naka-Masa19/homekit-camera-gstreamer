@@ -1,4 +1,4 @@
-name: Tests
+name: Tests (Debian)
 
 on: [push, pull_request]
 
@@ -9,7 +9,7 @@ jobs:
       matrix:
         debian-version: ["12", "13"]
 
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     container:
       image: debian:${{ matrix.debian-version }}
 
