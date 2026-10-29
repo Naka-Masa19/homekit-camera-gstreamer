@@ -8,8 +8,12 @@ from .video_streaming import VideoStreaming
 
 logger = logging.getLogger(__name__)
 logger.info("Initializing GStreamer")
-Gst.init()
+Gst.init(None)
 logger.info(f"Initialized {Gst.version_string()}")
+
+if not Gst.version()[1] >= 22:
+    logger.error("GStreamer 1.22.0 or later is required")
+    raise SystemExit(1)
 
 if "GST_DEBUG" not in environ:
     Gst.debug_set_default_threshold(
