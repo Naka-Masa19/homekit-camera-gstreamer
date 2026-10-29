@@ -26,4 +26,4 @@ jobs:
         run: pip install . --break-system-packages
 
       - name: Test module
-        run: pytest -s -o log_cli=true --log-cli-level=INFO
+        run: pytest
