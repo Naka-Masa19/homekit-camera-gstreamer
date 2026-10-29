@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Update packuage list
+        run: apt update
+
       - name: Install dependencies
         run: apt install -y gstreamer1.0-plugins-good gstreamer1.0-plugins-bad libgstreamer1.0-0 gir1.2-gst-plugins-base-1.0 python3-gst-1.0 python3-gi python3-pip python3-pytest gir1.2-gdkpixbuf-2.0
 
