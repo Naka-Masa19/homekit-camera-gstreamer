@@ -46,34 +46,36 @@ class GstCamera(camera.Camera):
         self.set_info_service(firmware_revision=Gst.version_string())
         self._is_source_exclusive = options.get("stream_count", 1) == 1
         self._snapshot_pipeline_wait_state = Gst.State.NULL if self._is_source_exclusive else Gst.State.READY
-        self.src = (lambda: Gst.parse_bin_from_description(f"{source} ! identity", True)) if isinstance(source, str) else source
+        self._src = (lambda: Gst.parse_bin_from_description(f"{source} ! identity", True)) if isinstance(source, str) else source
+        self._snapshot_pipeline = Gst.Pipeline.new()
+        self._snapshot_bus = self._snapshot_pipeline.get_bus()
         self.ignore_reconfig = False
         self.ignore_h264_level = False
         self.pre_encoder_format = None
         self.snapshot_warmup_frames = 0
         self.encoder_properties = Gst.Structure.new_empty("encoder_properties")
-        self.snapshot_pipeline = Gst.Pipeline.new()
-        self.snapshot_bus = self.snapshot_pipeline.get_bus()
 
-        if not (callable(self.src) and isinstance(snapshot_src := self.src(), Gst.Bin)):
+        if not (callable(self._src) and isinstance(snapshot_src := self._src(), Gst.Bin)):
             raise TypeError("source must be str or callable")
-        self.snapshot_pipeline.add(snapshot_src)
+        self._snapshot_pipeline.add(snapshot_src)
         match snapshot_src.iterate_all_by_element_factory_name("pipewiresrc").next():
             case Gst.IteratorResult.OK, pipewiresrc:
                 pipewiresrc.set_properties(client_name="HomeKit Snapshot")
 
-        snapshot_convertscale = self.snapshot_pipeline.make_and_add("videoconvertscale")
-        self.snapshot_caps = self.snapshot_pipeline.make_and_add("capsfilter")
-        snapshot_jpegenc = self.snapshot_pipeline.make_and_add("jpegenc")
+        snapshot_convertscale = self._snapshot_pipeline.make_and_add("videoconvertscale")
+        self._snapshot_caps = self._snapshot_pipeline.make_and_add("capsfilter")
 
-        self.snapshot_sink = GstApp.AppSink()
-        self.snapshot_pipeline.add(self.snapshot_sink)
-        self.snapshot_sink.set_max_buffers(1)
-        self.snapshot_sink.set_drop(True)
+        snapshot_jpegenc = self._snapshot_pipeline.make_and_add("jpegenc")
+        # snapshot_jpegenc.set_properties(snapshot=True)
 
-        Gst.Element.link_many(snapshot_src, snapshot_convertscale, self.snapshot_caps, snapshot_jpegenc, self.snapshot_sink)
+        self._snapshot_sink = GstApp.AppSink()
+        self._snapshot_pipeline.add(self._snapshot_sink)
+        self._snapshot_sink.set_max_buffers(1)
+        self._snapshot_sink.set_drop(True)
 
-        self.snapshot_pipeline.set_state(self._snapshot_pipeline_wait_state)
+        Gst.Element.link_many(snapshot_src, snapshot_convertscale, self._snapshot_caps, snapshot_jpegenc, self._snapshot_sink)
+
+        self._snapshot_pipeline.set_state(self._snapshot_pipeline_wait_state)
 
     @property
     def pre_encoder_format(self):
@@ -114,13 +116,13 @@ class GstCamera(camera.Camera):
         self._snapshot_warmup_frames = arg
 
     async def stop(self):  # stop accessary
-        self.snapshot_pipeline.set_state(Gst.State.NULL)
+        self._snapshot_pipeline.set_state(Gst.State.NULL)
         return await super().stop()
 
     async def start_stream(self, session_info, stream_config):
         logger.info(f"[{session_info['id']}] Starting stream")
         session_info["streaming_instance"] = self.StreamingSessionClass(
-            self.src, stream_config, self.pre_encoder_format, self.encoder_properties, self.ignore_h264_level
+            self._src, stream_config, self.pre_encoder_format, self.encoder_properties, self.ignore_h264_level
         )
         return await asyncio.to_thread(session_info["streaming_instance"].start_stream)
 
@@ -136,17 +138,17 @@ class GstCamera(camera.Camera):
         session_info["streaming_instance"].stop_stream()
 
     def get_snapshot(self, info):
-        while self.snapshot_bus.pop():
+        while self._snapshot_bus.pop():
             pass
         caps = Gst.Caps.new_empty_simple("video/x-raw")
         caps.set_value("width", info["image-width"])
         caps.set_value("height", info["image-height"])
-        self.snapshot_caps.set_properties(caps=caps)
+        self._snapshot_caps.set_properties(caps=caps)
         if self._is_source_exclusive and len(self.sessions) == 1:
             sample = None
         else:
-            self.snapshot_pipeline.set_state(Gst.State.PLAYING)
+            self._snapshot_pipeline.set_state(Gst.State.PLAYING)
             for _ in range(self.snapshot_warmup_frames + 1):
-                sample = self.snapshot_sink.try_pull_sample(Gst.SECOND * 5)
-            self.snapshot_pipeline.set_state(self._snapshot_pipeline_wait_state)
+                sample = self._snapshot_sink.try_pull_sample(Gst.SECOND * 5)
+            self._snapshot_pipeline.set_state(self._snapshot_pipeline_wait_state)
         return buf.extract_dup(0, buf.get_size()) if sample and (buf := sample.get_buffer()) else super().get_snapshot(info)

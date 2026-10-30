@@ -1,7 +1,7 @@
 # Adapted from HAP-python's camera_main.py and modified for this project.
 # Original: https://github.com/ikalchev/HAP-python/blob/dev/camera_main.py
 # Licensed under the Apache License, Version 2.0. See ../THIRD_PARTY_LICENSES.md.
-"""Example of using Media Foundation (mfvideosrc) or Direct3D11 screen
+"""Example of using Media Foundation (mfvideosrc) or Direct3D12 screen
 capture (d3d11screencapturesrc) as a video source on Windows."""
 
 import logging

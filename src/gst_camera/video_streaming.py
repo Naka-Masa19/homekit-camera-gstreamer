@@ -28,23 +28,24 @@ class VideoStreaming:
         encoder_properties: Gst.Structure,
         ignore_h264_level: bool,
     ):
-        self.stream_config = stream_config
-        self.pre_encoder_format = pre_encoder_format
-        self.encoder_properties = encoder_properties
-        self.ignore_h264_level = ignore_h264_level
         self.pipeline = Gst.Pipeline.new()
-        self.bus = self.pipeline.get_bus()
+        self._bus = self.pipeline.get_bus()
+        self._stream_config = stream_config
+        self._pre_encoder_format = pre_encoder_format
+        self._encoder_properties = encoder_properties
+        self._ignore_h264_level = ignore_h264_level
 
-        self.src = source()
-        match self.src.iterate_all_by_element_factory_name("pipewiresrc").next():
+        self._src = source()
+        self._src_pad = self._src.get_static_pad("src")
+        match self._src.iterate_all_by_element_factory_name("pipewiresrc").next():
             case Gst.IteratorResult.OK, pipewiresrc:
                 pipewiresrc.set_properties(client_name=f"HomeKit Stream ({stream_config['address']})")
-        self.pipeline.add(self.src)
+        self.pipeline.add(self._src)
 
         self._init_encodebin()
 
-        self.rtppay = self.pipeline.make_and_add("rtph264pay")
-        self.rtppay.set_properties(
+        self._rtppay = self.pipeline.make_and_add("rtph264pay")
+        self._rtppay.set_properties(
             config_interval=-1,
             ssrc=stream_config["v_ssrc"],
             mtu=int.from_bytes(stream_config["v_max_mtu"], "little"),
@@ -59,31 +60,31 @@ class VideoStreaming:
         sink = self.pipeline.make_and_add("udpsink")
         sink.set_properties(sync=False, host=stream_config["address"], port=stream_config["v_port"])
 
-        Gst.Element.link_many(self.src, self.enc, self.rtppay, srtp, sink)
+        Gst.Element.link_many(self._src, self._enc, self._rtppay, srtp, sink)
 
     def _init_encodebin(self):
-        self.enc: Gst.Bin = self.pipeline.make_and_add("encodebin")
+        self._enc: Gst.Bin = self.pipeline.make_and_add("encodebin")
 
-        enc_format = Gst.Caps.new_empty_simple("video/x-h264")
-        enc_format.set_value("profile", _ENCODE_PROFILE[self.stream_config["v_profile_id"]])
-        if not self.ignore_h264_level:
-            enc_format.set_value("level", _ENCODE_LEVEL[self.stream_config["v_level"]])
-        enc_format.set_value("bitrate", self.stream_config["v_max_bitrate"])
+        format = Gst.Caps.new_empty_simple("video/x-h264")
+        format.set_value("profile", _ENCODE_PROFILE[self._stream_config["v_profile_id"]])
+        format.set_value("bitrate", self._stream_config["v_max_bitrate"])
+        if not self._ignore_h264_level:
+            format.set_value("level", _ENCODE_LEVEL[self._stream_config["v_level"]])
 
-        enc_restriction = Gst.Caps.new_empty_simple("video/x-raw")
-        enc_restriction.set_value("width", self.stream_config["width"])
-        enc_restriction.set_value("height", self.stream_config["height"])
-        enc_restriction.set_value("framerate", Gst.Fraction(self.stream_config["fps"]))
-        if self.pre_encoder_format is not None:
-            enc_restriction.set_value("format", self.pre_encoder_format)
+        restriction = Gst.Caps.new_empty_simple("video/x-raw")
+        restriction.set_value("width", self._stream_config["width"])
+        restriction.set_value("height", self._stream_config["height"])
+        restriction.set_value("framerate", Gst.Fraction(self._stream_config["fps"]))
+        if self._pre_encoder_format is not None:
+            restriction.set_value("format", self._pre_encoder_format)
 
-        self.profile = GstPbutils.EncodingVideoProfile.new(enc_format, None, enc_restriction, 0)
-        self.profile.set_element_properties(self.encoder_properties)
+        profile = GstPbutils.EncodingVideoProfile.new(format, None, restriction, 0)
+        profile.set_element_properties(self._encoder_properties)
 
-        self.enc.set_properties(profile=self.profile)
+        self._enc.set_properties(profile=profile)
 
-        logger.info(f"Encodebin input caps: {enc_restriction.to_string()}")
-        logger.info(f"H264 profile: {enc_format.to_string()}")
+        logger.info(f"Encodebin input caps: {restriction.to_string()}")
+        logger.info(f"H264 profile: {format.to_string()}")
 
     def start_stream(self):
         self.pipeline.set_state(Gst.State.PLAYING)
@@ -91,7 +92,7 @@ class VideoStreaming:
 
         if logger.isEnabledFor(logging.INFO):
             bin_list = list()
-            itr = self.enc.iterate_recurse()
+            itr = self._enc.iterate_recurse()
             while True:
                 match itr.next():
                     case Gst.IteratorResult.OK, element:
@@ -108,23 +109,23 @@ class VideoStreaming:
         return success
 
     def _reinit_encodebin(self, pad: Gst.Pad, info: Gst.PadProbeInfo):
-        self.src.unlink(self.enc)
-        self.enc.unlink(self.rtppay)
+        self._src.unlink(self._enc)
+        self._enc.unlink(self._rtppay)
 
-        self.enc.set_state(Gst.State.NULL)
-        self.pipeline.remove(self.enc)
+        self._enc.set_state(Gst.State.NULL)
+        self.pipeline.remove(self._enc)
 
         self._init_encodebin()
 
-        Gst.Element.link_many(self.src, self.enc, self.rtppay)
+        Gst.Element.link_many(self._src, self._enc, self._rtppay)
 
-        self.enc.sync_state_with_parent()
+        self._enc.sync_state_with_parent()
         return Gst.PadProbeReturn.REMOVE
 
     def reconfigure_stream(self, stream_config):
-        self.stream_config.update(stream_config)
-        self.src.get_static_pad("src").add_probe(Gst.PadProbeType.BLOCK_DOWNSTREAM, self._reinit_encodebin)
-        while self.bus.pop():
+        self._stream_config.update(stream_config)
+        self._src_pad.add_probe(Gst.PadProbeType.BLOCK_DOWNSTREAM, self._reinit_encodebin)
+        while self._bus.pop():
             pass
         return True
 

@@ -11,10 +11,6 @@ import signal
 from pyhap.accessory_driver import AccessoryDriver
 from pyhap import camera, util
 from gst_camera import GstCamera
-
-from gi import require_version
-
-require_version("Gst", "1.0")
 from gi.repository import Gst  # type:ignore
 
 # Specify the audio and video configuration that your device can support
@@ -83,6 +79,7 @@ class Source(Gst.Bin):
 
 
 acc = GstCamera(Source, options, driver, "Camera")
+acc.snapshot_warmup_frames = 5
 driver.add_accessory(acc)
 
 # We want KeyboardInterrupts and SIGTERM (terminate) to be handled by the driver itself,
