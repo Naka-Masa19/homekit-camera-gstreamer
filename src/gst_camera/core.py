@@ -12,8 +12,7 @@ Gst.init(None)
 logger.info(f"Initialized {Gst.version_string()}")
 
 if not Gst.version()[1] >= 22:
-    logger.error("GStreamer 1.22.0 or later is required")
-    raise SystemExit(1)
+    raise RuntimeError(f"{__package__} requires GStreamer 1.22.0 or later, but {Gst.version_string()} is installed.")
 
 if "GST_DEBUG" not in environ:
     Gst.debug_set_default_threshold(

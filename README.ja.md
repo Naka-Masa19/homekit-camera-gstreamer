@@ -35,6 +35,14 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
 - ストリーミング中の動的な解像度変更
     - HomeKitからの要求に応じて、ストリーミング中でも解像度を変更できます。
 
+## 動作要件
+### Python
+- Linux：Python 3.10 以降
+- macOS / Windows：Python 3.12 以降
+### GStreamer
+- GStreamer 1.22.0 以降
+- GStreamer プラグイン：Good Plugins、Bad Plugins
+
 ## 動作確認済みの環境
 - Raspberry Pi
     - Model: Raspberry Pi 3 Model B Plus
@@ -54,10 +62,16 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
     - Encoder: `openh264enc`
 
 ## インストール
-### Debian (Ubuntu, Raspberry Pi OS)
+### Debian / Ubuntu / Raspberry Pi OS
 ```bash
-sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad libgstreamer1.0-0 gir1.2-gst-plugins-base-1.0 python3-gst-1.0 python3-gi python3-pip
+sudo apt update
+sudo apt install python3-pip python3-gst-1.0 gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
 pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl --break-system-packages
+```
+### Fedora
+```bash
+sudo dnf install python3-pip python3-gstreamer1 gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugin-openh264
+pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl
 ```
 ### macOS / Windows
 ``` zsh

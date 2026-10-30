@@ -34,6 +34,14 @@ It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network strea
 - Dynamic resolution changes while streaming
   - The resolution can be changed during streaming in response to requests from HomeKit.
 
+## Requirements
+### Python
+- Linux: Python 3.10 or later
+- macOS and Windows: Python 3.12 or later
+### GStreamer
+- GStreamer 1.22.0 or later
+- GStreamer plugins: Good Plugins and Bad Plugins
+
 ## Tested Environments
 - Raspberry Pi
   - Model: Raspberry Pi 3 Model B Plus
@@ -53,10 +61,16 @@ It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network strea
   - Encoder: `openh264enc`
 
 ## Installation
-### Debian (Ubuntu, Raspberry Pi OS)
+### Debian / Ubuntu / Raspberry Pi OS
 ```bash
-sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad libgstreamer1.0-0 gir1.2-gst-plugins-base-1.0 python3-gst-1.0 python3-gi python3-pip
+sudo apt update
+sudo apt install python3-pip python3-gst-1.0 gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
 pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl --break-system-packages
+```
+### Fedora
+```bash
+sudo dnf install python3-pip python3-gstreamer1 gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugin-openh264
+pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl
 ```
 ### macOS / Windows
 ``` zsh
