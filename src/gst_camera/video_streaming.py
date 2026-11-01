@@ -2,6 +2,7 @@ from base64 import b64decode
 from collections.abc import Callable
 from gi.repository import Gst, GstPbutils  # type:ignore
 import logging
+import asyncio
 from pyhap import camera
 
 logger = logging.getLogger(__name__)
@@ -86,9 +87,9 @@ class VideoStreaming:
         logger.info(f"Encodebin input caps: {restriction.to_string()}")
         logger.info(f"H264 profile: {format.to_string()}")
 
-    def start_stream(self):
+    async def start_stream(self):
         self.pipeline.set_state(Gst.State.PLAYING)
-        success = self.pipeline.get_state(Gst.SECOND * 10)[0] != Gst.StateChangeReturn.FAILURE
+        success = (await asyncio.to_thread(self.pipeline.get_state, Gst.SECOND * 10))[0] != Gst.StateChangeReturn.FAILURE
 
         if logger.isEnabledFor(logging.INFO):
             bin_list = list()
@@ -108,7 +109,9 @@ class VideoStreaming:
             self.stop_stream()
         return success
 
-    def _reinit_encodebin(self, pad: Gst.Pad, info: Gst.PadProbeInfo):
+    def _reinit_encodebin(
+        self, pad: Gst.Pad, info: Gst.PadProbeInfo, loop: asyncio.AbstractEventLoop, future: asyncio.Future
+    ):
         self._src.unlink(self._enc)
         self._enc.unlink(self._rtppay)
 
@@ -119,15 +122,18 @@ class VideoStreaming:
 
         Gst.Element.link_many(self._src, self._enc, self._rtppay)
 
-        self._enc.sync_state_with_parent()
+        result = self._enc.sync_state_with_parent()
+        loop.call_soon_threadsafe(future.set_result, result)
         return Gst.PadProbeReturn.REMOVE
 
-    def reconfigure_stream(self, stream_config):
+    async def reconfigure_stream(self, stream_config):
         self._stream_config.update(stream_config)
-        self._src_pad.add_probe(Gst.PadProbeType.BLOCK_DOWNSTREAM, self._reinit_encodebin)
+        loop = asyncio.get_running_loop()
+        future = loop.create_future()
+        self._src_pad.add_probe(Gst.PadProbeType.BLOCK_DOWNSTREAM, self._reinit_encodebin, loop, future)
         while self._bus.pop():
             pass
-        return True
+        return await future
 
     def stop_stream(self):
         self.pipeline.set_state(Gst.State.NULL)

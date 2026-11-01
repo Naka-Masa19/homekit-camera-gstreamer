@@ -49,3 +49,5 @@ for device in devices:
     print(f"formats: {', '.join(formats)}")
     pprint(resolutions)
     print()
+
+print("\033[1A\033[2K", end="")

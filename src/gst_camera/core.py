@@ -115,7 +115,7 @@ class GstCamera(camera.Camera):
             raise TypeError("snapshot_warmup_frames must be int")
         self._snapshot_warmup_frames = arg
 
-    async def stop(self):  # stop accessary
+    async def stop(self):  # Stop accessary
         self._snapshot_pipeline.set_state(Gst.State.NULL)
         return await super().stop()
 
@@ -124,14 +124,14 @@ class GstCamera(camera.Camera):
         session_info["streaming_instance"] = self.StreamingSessionClass(
             self._src, stream_config, self.pre_encoder_format, self.encoder_properties, self.ignore_h264_level
         )
-        return await asyncio.to_thread(session_info["streaming_instance"].start_stream)
+        return await session_info["streaming_instance"].start_stream()
 
     async def reconfigure_stream(self, session_info, stream_config):
         if self.ignore_reconfig:
             logger.info(f"[{session_info['id']}] Ignoreing reconfig stream")
             return True
         logger.info(f"[{session_info['id']}] Reconfiguring stream")
-        return session_info["streaming_instance"].reconfigure_stream(stream_config)
+        return await session_info["streaming_instance"].reconfigure_stream(stream_config)
 
     async def stop_stream(self, session_info):
         logger.info(f"[{session_info['id']}] Stopping stream")

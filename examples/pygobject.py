@@ -79,7 +79,6 @@ class Source(Gst.Bin):
 
 
 acc = GstCamera(Source, options, driver, "Camera")
-acc.snapshot_warmup_frames = 5
 driver.add_accessory(acc)
 
 # We want KeyboardInterrupts and SIGTERM (terminate) to be handled by the driver itself,
