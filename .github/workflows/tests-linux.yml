@@ -20,7 +20,7 @@ jobs:
         run: apt-get update
 
       - name: Install dependencies
-        run: apt-get install -y python3-pip python3-gst-1.0 gstreamer1.0-plugins-good gstreamer1.0-plugins-bad python3-pytest gir1.2-gdkpixbuf-2.0 --no-install-recommends
+        run: apt-get install -y python3-pip python3-gst-1.0 gstreamer1.0-plugins-good gstreamer1.0-plugins-bad python3-pytest-asyncio gir1.2-gdkpixbuf-2.0 --no-install-recommends
 
       - name: Install module
         run: pip install . --break-system-packages

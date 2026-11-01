@@ -109,9 +109,7 @@ class VideoStreaming:
             self.stop_stream()
         return success
 
-    def _reinit_encodebin(
-        self, pad: Gst.Pad, info: Gst.PadProbeInfo, loop: asyncio.AbstractEventLoop, future: asyncio.Future
-    ):
+    def _reinit_encodebin(self, pad: Gst.Pad, info: Gst.PadProbeInfo, loop: asyncio.AbstractEventLoop, future: asyncio.Future):
         self._src.unlink(self._enc)
         self._enc.unlink(self._rtppay)
 

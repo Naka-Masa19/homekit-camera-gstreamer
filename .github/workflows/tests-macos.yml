@@ -19,7 +19,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install module
-        run: pip install . pytest
+        run: pip install . pytest-asyncio
 
       - name: Test module
         run: pytest

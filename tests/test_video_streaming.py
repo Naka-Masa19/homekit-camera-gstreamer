@@ -4,11 +4,13 @@ from time import sleep
 from secrets import token_bytes
 from base64 import b64encode
 import logging
+import pytest
 
 logging.basicConfig(level=logging.INFO)
 
 
-def test_videostreaming():
+@pytest.mark.asyncio
+async def test_videostreaming():
     config = {
         "v_profile_id": b"\x01",
         "v_level": b"\x02",
@@ -41,8 +43,8 @@ def test_videostreaming():
     streaming = VideoStreaming(
         lambda: Gst.parse_bin_from_description("videotestsrc", True), config, None, Gst.Structure.new_empty("a"), False
     )
-    assert streaming.start_stream()
-    sleep(5)
-    assert streaming.reconfigure_stream(config)
-    sleep(5)
+    assert await streaming.start_stream()
+    sleep(1)
+    assert await streaming.reconfigure_stream(config)
+    sleep(1)
     streaming.stop_stream()
