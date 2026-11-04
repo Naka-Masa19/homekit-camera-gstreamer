@@ -54,11 +54,11 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
     - GStreamer: 1.28.2
     - Encoder: `v4l2h264enc`
 - PC
-    - OS: Fedora Linux 44 (Workstation Edition)
+    - OS: Fedora Linux 45 (Workstation Edition)
     - Source: PipeWire
     - Camera: MJPEGカメラ
-    - Python: 3.14.6
-    - GStreamer: 1.28.6
+    - Python: 3.15.0
+    - GStreamer: 1.28.8
     - Encoder: `openh264enc`
 
 ## インストール
