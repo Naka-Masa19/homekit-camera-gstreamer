@@ -1,6 +1,5 @@
 from collections import defaultdict
 from math import gcd
-from pprint import pprint
 from gi.repository import Gst  # type: ignore
 
 Gst.init()
@@ -28,18 +27,18 @@ for device in devices:
 
     formats = set()
     resolutions = defaultdict(set)
+    other_resolutions = set()
     for cap in device.get_caps():
         width = cap.get_value("width")
         height = cap.get_value("height")
         match (width, height):
             case int(), int():
                 g = gcd(width, height)
-                group = (width // g, height // g)
+                resolutions[(width // g, height // g)].add((width, height))
             case _:
                 width = convert(width)
                 height = convert(height)
-                group = "other"
-        resolutions[group].add((width, height))
+                other_resolutions.add((width, height))
         match cap.get_name():
             case "video/x-raw":
                 format = cap.get_value("format")
@@ -47,7 +46,13 @@ for device in devices:
                 format = "MJPEG"
         formats.add(format)
     print(f"formats: {', '.join(formats)}")
-    pprint(resolutions)
+    for key in resolutions.keys():
+        print(f"{key[0]}:{key[1]}: {', '.join([f'{i[0]}x{i[1]}' for i in resolutions[key]])}")
+    print("others:", other_resolutions)
+    width, height = max([rr for r in resolutions.values() for rr in r], key=lambda x: x[0] * x[1], default=(None, None))
+    if width and height:
+        g = gcd(width, height)
+        print(f"この入力の最も視野が広いアスペクト比はおそらく{width // g}:{height // g}({width}x{height})です。")
     print()
 
 print("\033[1A\033[2K", end="")

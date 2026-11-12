@@ -2,7 +2,6 @@ from collections.abc import Callable
 from pyhap import camera
 from os import environ
 import logging
-import asyncio
 from gi.repository import Gst, GstApp  # type:ignore
 from .video_streaming import VideoStreaming
 
@@ -24,18 +23,6 @@ if "GST_DEBUG" not in environ:
             logging.DEBUG: Gst.DebugLevel.INFO,
         }[logger.getEffectiveLevel()]
     )
-
-if not hasattr(asyncio, "SafeChildWatcher"):
-
-    class _DummyChildWatcher:
-        def __init__(self):
-            logger.warning("Class asyncio.SafeChildWatcher was removed in Python 3.14.")
-
-        def __getattr__(self, name):
-            return lambda *a, **ka: logger.warning(f"Called asyncio.SafeChildWatcher.{name}, ignored.")
-
-    asyncio.SafeChildWatcher = _DummyChildWatcher
-    asyncio.set_child_watcher = lambda w: logger.warning("Method asyncio.set_child_watcher was removed in Python 3.14, ignored.")
 
 
 class GstCamera(camera.Camera):
