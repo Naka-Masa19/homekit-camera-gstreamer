@@ -26,6 +26,8 @@ for device in devices:
         print(f"API: {name}")
 
     formats = set()
+    drm_formats = set()
+    encoded = set()
     resolutions = defaultdict(set)
     other_resolutions = set()
     for cap in device.get_caps():
@@ -42,13 +44,22 @@ for device in devices:
         match cap.get_name():
             case "video/x-raw":
                 format = cap.get_value("format")
-            case "image/jpeg":
-                format = "MJPEG"
-        formats.add(format)
-    print(f"formats: {', '.join(formats)}")
-    for key in resolutions.keys():
+                if format == "DMA_DRM":
+                    drm_formats.add(cap.get_value("drm-format"))
+                else:
+                    formats.add(format)
+            case e:
+                encoded.add(e)
+    if formats:
+        print(f"formats: {', '.join(formats)}")
+    if drm_formats:
+        print(f"drm-formats: {', '.join(drm_formats)}")
+    if encoded:
+        print(f"encoded: {', '.join(encoded)}")
+    for key in sorted(resolutions.keys(),key=lambda k:k[0]):
         print(f"{key[0]}:{key[1]}: {', '.join([f'{i[0]}x{i[1]}' for i in resolutions[key]])}")
-    print("others:", other_resolutions)
+    if other_resolutions:
+        print("others:", other_resolutions)
     width, height = max([rr for r in resolutions.values() for rr in r], key=lambda x: x[0] * x[1], default=(None, None))
     if width and height:
         g = gcd(width, height)

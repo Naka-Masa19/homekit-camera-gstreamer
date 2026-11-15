@@ -77,7 +77,7 @@ pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/do
 ``` zsh
 pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl
 ```
-> 初回起動時、時間がかかることがあります。
+> GStreamer本体は[PyPI](https://pypi.org/project/gstreamer-meta/)から自動ダウンロードされます。初回起動時、時間がかかることがあります。
 
 ## 構成例 (PipeWire経由のカメラ)
 
