@@ -13,10 +13,10 @@ monitor.stop()
 def convert(data):
     match data:
         case Gst.ValueList():
-            data = tuple(data)
+            data = f"[{','.join(str(d) for d in list(data))}]"
         case Gst.IntRange():
             tmp = data.range
-            data = f"{min(tmp)} ~ {max(tmp)}"
+            data = f"[{min(tmp)}~{max(tmp)}]"
     return data
 
 
@@ -25,9 +25,7 @@ for device in devices:
     if name := device.get_properties().get_value("device.api"):
         print(f"API: {name}")
 
-    formats = set()
-    drm_formats = set()
-    encoded = set()
+    formats = {"raw-format": set(), "drm-format": set(), "encoded": set()}
     resolutions = defaultdict(set)
     other_resolutions = set()
     for cap in device.get_caps():
@@ -45,25 +43,26 @@ for device in devices:
             case "video/x-raw":
                 format = cap.get_value("format")
                 if format == "DMA_DRM":
-                    drm_formats.add(cap.get_value("drm-format"))
+                    formats["drm-format"].add(cap.get_value("drm-format"))
                 else:
-                    formats.add(format)
+                    formats["raw-format"].add(format)
             case e:
-                encoded.add(e)
-    if formats:
-        print(f"formats: {', '.join(formats)}")
-    if drm_formats:
-        print(f"drm-formats: {', '.join(drm_formats)}")
-    if encoded:
-        print(f"encoded: {', '.join(encoded)}")
-    for key in sorted(resolutions.keys(),key=lambda k:k[0]):
-        print(f"{key[0]}:{key[1]}: {', '.join([f'{i[0]}x{i[1]}' for i in resolutions[key]])}")
+                formats["encoded"].add(e)
+    for key, value in formats.items():
+        if value:
+            print(f"{key}: {', '.join(sorted(value))}")
+
+    print("resolutions:")
+    # print(max(len(f"{key[0]}:{key[1]}") for key in resolutions.keys()))
+    for key in sorted(resolutions.keys()):
+        print(f"    {key[0]}:{key[1]}: {', '.join([f'{i[0]}x{i[1]}' for i in sorted(resolutions[key], reverse=True)])}")
     if other_resolutions:
-        print("others:", other_resolutions)
-    width, height = max([rr for r in resolutions.values() for rr in r], key=lambda x: x[0] * x[1], default=(None, None))
+        print(f"    others: {', '.join(f'{other[0]}x{other[1]}' for other in other_resolutions)}")
+
+    width, height = max([j for i in resolutions.values() for j in i], key=lambda x: x[0] * x[1], default=(None, None))
     if width and height:
         g = gcd(width, height)
-        print(f"この入力の最も視野が広いアスペクト比はおそらく{width // g}:{height // g}({width}x{height})です。")
+        print(f"The widest aspect ratio for this input is probably {width // g}:{height // g} ({width}x{height}).")
     print()
 
 print("\033[1A\033[2K", end="")

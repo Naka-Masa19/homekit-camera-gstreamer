@@ -1,4 +1,4 @@
-from gst_camera.video_streaming import VideoStreaming
+from gst_camera.streaming import StreamingSession
 from gi.repository import Gst  # type:ignore
 from time import sleep
 from secrets import token_bytes
@@ -40,7 +40,7 @@ async def test_videostreaming():
         "a_port": 57210,
         "a_srtp_key": b64encode(token_bytes(30)),
     }
-    streaming = VideoStreaming(
+    streaming = StreamingSession(
         lambda: Gst.parse_bin_from_description("videotestsrc", True), config, None, Gst.Structure.new_empty("a"), False
     )
     assert await streaming.start_stream()

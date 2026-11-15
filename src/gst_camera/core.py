@@ -3,7 +3,7 @@ from pyhap import camera
 from os import environ
 import logging
 from gi.repository import Gst, GstApp  # type:ignore
-from .video_streaming import VideoStreaming
+from .streaming import StreamingSession
 
 logger = logging.getLogger(__name__)
 logger.info("Initializing GStreamer")
@@ -26,7 +26,7 @@ if "GST_DEBUG" not in environ:
 
 
 class GstCamera(camera.Camera):
-    StreamingSessionClass = VideoStreaming
+    StreamingSessionClass = StreamingSession
 
     def __init__(self, source: str | Callable[[], Gst.Bin], options, *args, **kwargs):
         super().__init__(options, *args, **kwargs)

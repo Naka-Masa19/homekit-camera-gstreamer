@@ -20,7 +20,7 @@ _ENCODE_LEVEL = {
 }
 
 
-class VideoStreaming:
+class StreamingSession:
     def __init__(
         self,
         source: Callable[[], Gst.Bin],
