@@ -66,16 +66,16 @@ Raspberry Pi Camera Module や USB／Web カメラ、PipeWire、ネットワー�
 ```bash
 sudo apt update
 sudo apt install python3-pip python3-gst-1.0 gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
-pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl --break-system-packages
+pip3 install -U homekit-camera-gstreamer --break-system-packages
 ```
 ### Fedora
 ```bash
 sudo dnf install python3-pip python3-gstreamer1 gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugin-openh264
-pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl
+pip3 install -U homekit-camera-gstreamer
 ```
 ### macOS / Windows
 ``` zsh
-pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl
+pip3 install -U homekit-camera-gstreamer
 ```
 > GStreamer本体は[PyPI](https://pypi.org/project/gstreamer-meta/)から自動ダウンロードされます。初回起動時、時間がかかることがあります。
 

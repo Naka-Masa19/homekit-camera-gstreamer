@@ -1,6 +1,6 @@
 # HomeKit Camera GStreamer
 
-[日本語](README.ja.md)
+[日本語](https://github.com/Naka-Masa19/homekit-camera-gstreamer/blob/main/README.ja.md)
 
 [![Tests (Debian)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/tests-linux.yml/badge.svg)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/tests-linux.yml)
 [![Tests (macOS)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/tests-macos.yml/badge.svg)](https://github.com/Naka-Masa19/homekit-camera-gstreamer/actions/workflows/tests-macos.yml)
@@ -11,7 +11,7 @@ This Python library exposes GStreamer video sources as HomeKit cameras in Apple 
 It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network streams as inputs. It automatically selects a supported encoder and lets multiple Apple devices view the video simultaneously.
 
 ---
-[Sample programs](/examples)\
+[Sample programs](https://github.com/Naka-Masa19/homekit-camera-gstreamer/tree/main/examples)\
 [Wiki](https://github.com/Naka-Masa19/homekit-camera-gstreamer/wiki)
 
 ## Features
@@ -65,16 +65,16 @@ It can use Raspberry Pi Camera Modules, USB/webcams, PipeWire, and network strea
 ```bash
 sudo apt update
 sudo apt install python3-pip python3-gst-1.0 gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
-pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl --break-system-packages
+pip3 install -U homekit-camera-gstreamer --break-system-packages
 ```
 ### Fedora
 ```bash
 sudo dnf install python3-pip python3-gstreamer1 gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugin-openh264
-pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl
+pip3 install -U homekit-camera-gstreamer
 ```
 ### macOS / Windows
 ``` zsh
-pip3 install https://github.com/Naka-Masa19/homekit-camera-gstreamer/releases/download/v1.1/homekit_camera_gstreamer-1.1-py3-none-any.whl
+pip3 install -U homekit-camera-gstreamer
 ```
 
 > The GStreamer will be downloaded automatically from [PyPI](https://pypi.org/project/gstreamer-meta/). The first startup may take some time.
