@@ -101,7 +101,7 @@ wpctl set-default [カメラのID]
 > [カメラのID]はwpctl statusのSourcesの結果に合わせて書き換えて下さい。
 
 ### 3. 実行
-使用するカメラのアスペクト比に合わせてサンプルを選び、`camera.py`という名前で保存してください。
+使用するカメラのアスペクト比に合わせてサンプルを選び、`camera.py`という名前で保存してください。カメラの利用可能な解像度とアスペクト比は、`python3 -m gst_camera`で確認できます。
 
 [16:9カメラ向けサンプルコード](examples/pipewire-16-9.py)
 - 一般的なカメラ、Raspberry Pi Camera Module 3など

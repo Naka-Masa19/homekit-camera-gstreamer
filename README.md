@@ -107,13 +107,13 @@ wpctl set-default [camera ID]
 > Replace `[camera ID]` with the ID shown under `Sources` in the output of `wpctl status`.
 
 ### 3. Run
-Choose the sample that matches the aspect ratio of the camera you want to use, and save it as `camera.py`.
+Choose the sample that matches the aspect ratio of the camera you want to use, and save it as `camera.py`. You can check the available resolutions and aspect ratios of your camera with `python3 -m gst_camera`.
 
-[Sample code for 16:9 cameras](examples/pipewire-16-9.py)
+[Sample code for 16:9 cameras](https://github.com/Naka-Masa19/homekit-camera-gstreamer/blob/main/examples/pipewire-16-9.py)
 
 - General-purpose cameras and Raspberry Pi Camera Module 3, among others
 
-[Sample code for 4:3 cameras](examples/pipewire-4-3.py)
+[Sample code for 4:3 cameras](https://github.com/Naka-Masa19/homekit-camera-gstreamer/blob/main/examples/pipewire-4-3.py)
 
 - Raspberry Pi Camera Module 1 / 2, among others
 

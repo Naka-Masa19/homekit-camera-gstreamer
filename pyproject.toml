@@ -11,6 +11,7 @@ readme = "README.md"
 
 [project.urls]
 Repository = "https://github.com/Naka-Masa19/homekit-camera-gstreamer"
+Documentation = "https://github.com/Naka-Masa19/homekit-camera-gstreamer/wiki"
 Issues = "https://github.com/Naka-Masa19/homekit-camera-gstreamer/issues"
 
 [build-system]
