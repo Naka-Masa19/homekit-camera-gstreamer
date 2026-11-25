@@ -2,7 +2,8 @@ from gi import require_versions
 
 require_versions({"Xdp": "1.0"})
 
-from gi.repository import Xdp, GLib, Gst # type: ignore  # noqa: E402
+from gi.repository import Xdp, GLib, Gst  # type: ignore  # noqa: E402
+
 
 class ScreenCapture:
     def __init__(self):
@@ -15,7 +16,8 @@ class ScreenCapture:
             Xdp.PersistMode.TRANSIENT,
             None,
             None,
-            self.on_session_created)
+            self.on_session_created,
+        )
 
         self._loop = GLib.MainLoop()
         self._loop.run()
@@ -24,7 +26,7 @@ class ScreenCapture:
         self.session = portal.create_screencast_session_finish(result)
         self.session.start(None, None, self.on_session_started)
 
-    def on_session_started(self, session:Xdp.Session, result):
+    def on_session_started(self, session: Xdp.Session, result):
         session.start_finish(result)
         stream = session.get_streams()[0]
         self.width, self.height = stream[1]["size"]
@@ -40,7 +42,7 @@ class ScreenCapture:
         caps = Gst.Caps.new_empty_simple("video/x-raw")
         caps.set_value("width", self.width)
         caps.set_value("height", self.height)
-        #caps.set_value("framerate", Gst.Fraction(60))
+        # caps.set_value("framerate", Gst.Fraction(60))
         capsfilter.set_property("caps", caps)
 
         identity = bin.make_and_add("identity")
